@@ -1,0 +1,132 @@
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css');
+
+*{
+  background-color: rgba(0, 0, 0, 0);
+  margin: 0;
+  padding: 0;
+}
+
+.body {
+  font-family: 'Arial', sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.icon {
+  position: absolute;
+  top: 50%;
+  right: -5px;  /* Adjusted to position on the left inside the input field */
+  transform: translateY(-50%);
+  font-family: 'FontAwesome';
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.536);
+
+}
+
+.dropdowndiv {
+  position: absolute;
+  top: 25px;
+  left: 15px;
+  width: 200px;
+  border-radius: 5px;
+  backdrop-filter: blur(5px);
+  box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.388);
+}
+
+.dropdown {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  background-color: #f0f0f000;
+  color: black;
+}
+
+.opt {
+  background-color: #a3a2a2b6;
+  color: black;
+}
+
+.container{
+  background-image: url('./ncloud.jpg'); 
+  background-size: cover;
+  background-position: center;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.signinContainer {
+  background-color: rgba(169, 169, 169, 0.1);
+  padding: 40px 80px 40px 50px;
+  border-radius: 10px;
+  backdrop-filter: blur(3px);
+  box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.3);
+  text-align: center;
+  color: white;
+  width: 300px;
+}
+
+.signinContainer h2 {
+  font-family: 'Arial', sans-serif;
+  margin-bottom: 20px;
+  color: #ffffff;
+}
+
+.inputGroups {
+  position: relative;  
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.inputGroups input {
+  color: #ffffff;
+  background-color: #6a6a6a1c;
+  width: 90%;
+  padding: 10px 40px 10px 10px; 
+  border: 1px solid #cccccc;
+  border-radius: 7px;
+  font-size: 16px;
+}
+
+.inputGroups input:focus {
+  border-color: #009fd0;
+  outline: none;
+}
+
+.submitButtons {
+  background-color: #ffffff;
+  font-weight: 700;
+  color: #1b0cbc;
+  border: none;
+  border-radius: 20px;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  width: 107%;
+  margin-top: 20px;
+}
+
+.submitButtons:hover {
+  background-color: #dddddd;
+}
+
+.loginLinks {
+  display: block;
+  margin-top: 20px;
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.loginLinks:hover {
+  text-decoration: underline;
+}
+
+.inputGroups  input::placeholder{
+  color: rgb(255, 255, 255);
+}
+input[type="password"]::-ms-reveal, input[type="password"]::-ms-clear{
+  display: none;
+}
