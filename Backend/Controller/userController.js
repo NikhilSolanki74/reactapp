@@ -4,6 +4,29 @@ const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer')
 require('dotenv').config();
 
+
+const checkToken= async (dt)=>{
+  try {
+    const {token} = dt;
+    if(!token){
+return false;
+    }
+
+   const decode = jwt.verify(token , process.env.JWT_SECRET)
+   const id = decode.data;
+   const data =await registermodel.findOne({_id:id},'name email contact')
+   if(data){
+      return data;
+   }else{
+     return false;
+   }
+   } catch (error) {
+    console.log(error);
+    return false;
+   }
+}
+
+
 const Signin = async (req, res) => {
   try {
     if (req.body) {
@@ -78,7 +101,7 @@ const Login = async (req, res) => {
             msg: "Email Not Exists, Please check again",
           });
     }
-    const hashpass = await registermodel.findOne({_id:checkemail._id},'password _id')
+    const hashpass = await registermodel.findOne({_id:checkemail._id},'password _id status')
     
    await bcrypt.compare(password,hashpass.password ,async (err,result)=>{
     if (err) {
@@ -88,7 +111,7 @@ const Login = async (req, res) => {
         if(result){
 
           const token =await jwt.sign({data:hashpass._id} ,process.env.JWT_SECRET,{expiresIn:'1d'} );
-          return res.json({success:true,msg:'Login Successfully',token:token})
+          return res.json({success:true,msg:'Login Successfully',token:token,status:hashpass.status })
         }else{
           console.log(result)
           return res.json({success:false,msg:'Incorrect Password'})
@@ -109,12 +132,12 @@ const getUserData = async (req,res)=>{
     if(!token){
 return res.json({success:false,msg:'data not found'})
     }
-   await jwt.verify(token , process.env.JWT_SECRET,async (error,decode)=>{
+    jwt.verify(token , process.env.JWT_SECRET,async (error,decode)=>{
       if(error){
-return res.json({success:false,msg:'error in processing'})
+return res.json({success:false,msg:'Authentication Error !'})
       }
       const id = decode.data;
-      const data = await registermodel.findOne({_id:id},'name email contact')
+      const data = await registermodel.findOne({_id:id},'name email contact status')
       if(data){
          return res.json({success:true,data:data})
       }else{
@@ -377,7 +400,53 @@ return res.json({success:false, msg:'server error occured'})
 }
 
 
+const removeAccount = async (req,res)=>{
+      try {
+        const id = req.body.data;
+       
+        if(!id){
+          return res.json({success:false,msg:'Invalid Input data'})
+        }
+        await registermodel.findByIdAndDelete(id )
+          
+        return res.json({success:true,msg:'Accound Removed Successfully '}) 
+         
+      } catch (error) {
+        console.log(err)
+       return res.json({success:false , msg:'Server Error Occured'})
+      }
+}
 
 
 
-module.exports = { Signin, Login,getUserData,resetPassword ,getOTP,checkOTP,changePassword};
+const edituser = async (req,res)=>{
+  try {
+const {data} = req.body;
+if(!data){
+  return res.json({success:false,msg:"Data not Found"});
+}
+const tokenData =await checkToken(data)
+if(!tokenData._id){
+  return res.json({success:false,msg:"Authorization failure !"})
+}else{
+ 
+const dataUpdate = await registermodel.findByIdAndUpdate(tokenData._id,{name:data.name , contact:data.contact},{new:true})
+if(dataUpdate){
+
+  return res.json({success:true,msg:'User Details Changed Successfully',tokenData})
+}else{
+
+  return res.json({success:false,msg:'Error in update details' })
+}
+
+} 
+  } catch (error) {
+    console.log(error)
+    return res.json({success:false , msg:'server Error Occured'})
+  }
+}
+
+
+
+
+module.exports = { Signin, Login,getUserData,resetPassword ,getOTP,checkOTP,changePassword,removeAccount,edituser};

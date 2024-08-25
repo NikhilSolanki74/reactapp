@@ -1,5 +1,5 @@
 .container{
-    background-image: url('./leaf.jpg');
+    background-image: url('../train.jpg');
     background-attachment: fixed;
     background-size: cover;
     background-position:center;
@@ -32,7 +32,7 @@
     border:none;
     background-color: rgba(144, 144, 144, 0.359);
     backdrop-filter: blur(5px);
-      box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.3);
+      box-shadow: 0px 0px 15px rgba(0, 0, 0, 63%);
     color:rgb(255, 255, 255);
     /* text-shadow: 1px 1px rgba(0, 0, 0, 0.708); */
     display: flex;
@@ -51,9 +51,10 @@
     margin-bottom: 4%;
     border-radius: 20px;
     border:none;
-    background-color: rgba(118, 117, 117, 0.334);
+    /* background-color: rgba(118, 117, 117, 0.334); */
+    background-color: (181 181 181 / 33%);
     backdrop-filter: blur(50px);
-      box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+      box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.338);
     color:rgb(255, 255, 255);
     
     display: flex;

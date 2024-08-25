@@ -1,0 +1,105 @@
+.container{
+    min-height: 100vh;
+    height: auto;
+    background-image: url('../train.jpg');
+    /* filter:blur(1px); */
+    background-position: center;
+    background-size: cover;
+    background-attachment: fixed;
+}
+
+
+.tableContainer{
+    
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    /* flex-direction: column; */
+}
+.table{
+    /* color: rgb(0, 0, 0); */
+    background-color: rgba(194, 194, 194, 0.17);
+    backdrop-filter: blur(10px);
+    margin-top: 2%;
+    width: 95%;
+    border-collapse: collapse;
+   box-shadow: 0px 0px 15px rgba(94, 94, 94, 0.341);
+   margin-bottom: 20px;
+}
+.table th{
+    /* text-shadow: 0px 0px 5px rgb(0, 0, 0); */
+    background-color: rgba(255, 255, 255, 0.453);
+    color: black;
+    font-size: 20px;
+    font-weight: 700;
+    height: 40px;
+}
+.table td{
+    background-color: rgba(99, 99, 99, 0.334);
+    text-shadow: 0px 0px 15px rgba(0, 0, 0, 0.485);
+    color: white;
+     /* width:100px; */
+    height: 30px;
+    max-width: 100px;
+    white-space:nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden; 
+}
+
+
+.table th,td ,tr{
+    padding: 5px 8px 5px 8px;
+  border: 2px solid rgba(40, 40, 40, 0.697);
+  
+}
+.table tr:hover{
+   background-color: rgba(240, 248, 255, 0.301);
+}
+
+
+.loadingdiv{
+/* background-color: white; */
+display: flex;
+justify-content: center;
+}
+
+
+.loading{
+/* display:'flex';
+ justify-content:'center';
+  align-items:'center'; */
+  height:130px;
+}
+.pagination{
+    display: flex;
+    justify-content: space-around;
+     padding-bottom: 60px;
+}
+
+.pagination button{
+    width: 10%;
+    padding: 10px;
+    border: none;
+    border-radius: 7px;
+    background: rgba(255, 255, 255, 0.727);
+    color: #282828;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    /* margin-top: 30px; */
+    box-shadow: 0px 0px 15px #0000006e;
+}
+
+.pagination h3{
+    height: 24px;       
+    color: rgb(0, 0, 0);
+    text-shadow: 0px 0px 15px rgb(255, 255, 255);
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.756);
+    background-color: rgba(255, 255, 255, 0.492);
+    backdrop-filter: blur(5px);
+    border-radius: 3px ;
+    font-size: 20px;
+    font-weight: 1000;
+    padding: 4px;
+    
+}

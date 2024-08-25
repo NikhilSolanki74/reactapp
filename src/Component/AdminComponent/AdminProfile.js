@@ -1,18 +1,18 @@
 import React from 'react'
-import styles from './CSS/Profile.module.css'
-import Navbar from './Navbar'
+import styles from '../CSS/AdminCSS/AdminProfile.module.css'
+import AdminNavbar from './AdminNavbar'
 import { useSelector,useDispatch } from 'react-redux';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom'; 
-import { triggerNotification } from './Notification';
-import { setUser } from '../Redux/Features/UserSlice';
-const Profile = () => {
-  const baseurl = process.env.REACT_APP_BASE_URL || '';
+import { triggerNotification } from '../Notification';
+import { setUser } from '../../Redux/Features/UserSlice';
+const AdminProfile = () => {
+  const baseurl = process.env.REACT_APP_ADMIN_BASE_URL || '';
     const dispatch = useDispatch()
     const navigate = useNavigate()
     const usedata = useSelector((state)=>state.user)
     const handleEdit=()=>{
-      navigate('/edit')
+      navigate('/adminedit')
     }
   
   
@@ -31,7 +31,7 @@ const Profile = () => {
                   return  triggerNotification(data.msg)
                 }else{
                     triggerNotification(data.msg,'error')
-                   return navigate('/home')
+                   return navigate('/adminhomepage')
                 }
             }).catch((err)=>{
                 console.log(err)
@@ -46,7 +46,7 @@ const Profile = () => {
   }
   return (
     <div className={styles.container}>
-    <Navbar/>
+    <AdminNavbar/>
     <div className={styles.profileprimary}>
     <div className={styles.profilediv}>
     <div className={styles.image}>
@@ -55,6 +55,7 @@ const Profile = () => {
     </div>
       <div className={styles.details}>
     <label>Name: &nbsp;&nbsp;<span>{usedata.user.name}</span></label>
+    <label>Id: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>{usedata.user._id}</span></label>
     <label>Email: &nbsp;&nbsp; <span>{usedata.user.email}</span></label>
     <label>Contact: <span>{usedata.user.contact}</span></label>
 </div>
@@ -69,4 +70,4 @@ const Profile = () => {
   )
 }
 
-export default Profile
+export default AdminProfile

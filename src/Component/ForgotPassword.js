@@ -6,6 +6,7 @@ import { triggerNotification } from './Notification';
 import axios from 'axios';
 
 const ForgotPassword = () => {
+  const baseurl = process.env.REACT_APP_BASE_URL || '';
   const [otpbutton , setOtpButton] = useState({dis:false,name:'Change Password'})
   const form = useRef();
   const [inputVisibility ,setInputVisibility] = useState(true);
@@ -23,7 +24,7 @@ const ForgotPassword = () => {
 const handleOTP =async ()=>{
 if(validEmail.test(data.email)){
   setOtpButton({dis:true,name:'Loading...'})
-  await axios.post('http://localhost:4000/api/v1/getotp',{email:data.email}).then((response)=>{
+  await axios.post(baseurl+'/getotp',{email:data.email}).then((response)=>{
 const data = response.data; 
 if(data.success){
   setOtpButton({dis:true,name:'Change Password'})

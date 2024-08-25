@@ -8,6 +8,7 @@ import axios from 'axios';
 import { useNavigate,useLocation } from 'react-router-dom';
 
 const ChangePassword = () => {
+  const baseurl = process.env.REACT_APP_BASE_URL || '';
     const location = useLocation();
   const navigate = useNavigate();
   const form = useRef();
@@ -53,7 +54,7 @@ const ChangePassword = () => {
       if (!validPassword.test(data.newpassword)) {
         return triggerNotification('New Password is not valid', 'error');
       }
-     await axios.post('http://localhost:4000/api/v1/changepassword',data).then((response)=>{
+     await axios.post(baseurl+'/changepassword',data).then((response)=>{
       const data = response.data;
        if(data.success){
            navigate('/')

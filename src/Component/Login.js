@@ -5,6 +5,7 @@ import { triggerNotification } from './Notification';
 import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
+  const baseurl = process.env.REACT_APP_BASE_URL || '';
   const navigate = useNavigate();
   const form = useRef();
   const [data, setData] = useState({ email: '', password: '' });
@@ -26,34 +27,44 @@ const Login = () => {
   const validPassword = new RegExp('^(?=.*?[A-Za-z0-1]).{6,20}$');
 
   const handleSubmit = () => {
+    try{
     if (validEmail.test(data.email) && validPassword.test(data.password)) {
-      axios.post('http://localhost:4000/api/v1/login', data)
+      axios.post(baseurl+'/login', data)
         .then((response) => {
-          if (response.data) {
+         
             const dat = response.data;
+            if(dat.success){
             // console.log(dat);
-            if(dat.token){
             if(localStorage.getItem('token')){
               localStorage.removeItem('token')
             }
+            if(dat.status === '1'){
+
+            localStorage.setItem('token',dat.token )
+            console.log(dat.token)
+            navigate('/adminhomepage')
+          return  triggerNotification('Welcome to Admin Panel')
+          }else{
             localStorage.setItem('token',dat.token )
             console.log(dat.token)
             navigate('/home')
-            triggerNotification(dat.msg)
-          }else{
-          return  triggerNotification(dat.msg);
+          return  triggerNotification(dat.msg)
 
           }
           }else{
-    return triggerNotification('Server is not responding ,wait few second before retry', 'error');
+    return triggerNotification(dat.msg, 'error');
 
           }
+       
         })
         .catch((err) => {
           console.log('Error in sending the request', err);
         });
     } else {
       triggerNotification('Email or password is wrong!', 'error');
+    }}catch(err){
+// console.log(err)
+return triggerNotification('Error in Sending Request !' , 'error')
     }
   };
 

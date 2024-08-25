@@ -6,7 +6,8 @@ const model = new mongoose.Schema({
   email: { type: String, required: true },
   password: { type: String, required: true },
   contact: { type: Number, required: true },
-  token:{type:String ,default:'empty'}
+  token:{type:String ,default:'empty'},
+  status:{type:String ,default:'0'}
 });
 
 const registermodel = mongoose.model("registermodel", model);

@@ -1,9 +1,11 @@
 import React from 'react'
-
+import styles from './CSS/Loading.module.css'
 const Loading = () => {
   return (
-    <div style={{height:'100vh',display:'flex', justifyContent:'center',alignItems:'center',backgroundColor:'black'}}>
-      <img  style={{display:'flex', justifyContent:'center', alignItems:'center',height:'150px'}} src='https://res.cloudinary.com/dzjvyptwz/image/upload/v1720603063/hrozcvvif07qbprv4kh0.gif' alt='Loading...'></img>
+    <div className={styles.div}>
+    <div className={styles.gifdiv}>
+      <img className={styles.gif} src='https://res.cloudinary.com/dzjvyptwz/image/upload/v1724565607/d3sudd8i6fvubr6kulwd.gif' alt='Loading...'></img>
+    </div>
     </div>
   )
 }

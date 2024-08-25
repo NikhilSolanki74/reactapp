@@ -1,0 +1,31 @@
+.div{
+    height:100vh;
+    display:flex;
+     justify-content:center;
+    align-items:center;
+    background-color:rgba(0, 0, 0, 0);
+    background-image: url('plain.jpg');
+    background-position: center;
+    background-size: cover;
+}
+
+
+.gifdiv{
+    height: 250px;
+    width: 250px;
+    background-color: rgba(210, 210, 210, 0.634);
+    border-radius: 20px;
+    display: flex;
+    backdrop-filter: blur(3px);
+    justify-content: center;
+    align-items: center;
+}
+
+.gif{
+    display:flex;
+     justify-content:center;
+     align-items:center;
+    height:150px;
+}
+
+

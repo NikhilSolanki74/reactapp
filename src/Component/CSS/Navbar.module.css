@@ -63,6 +63,9 @@
     margin-right: 10px;
   }
   .profile label{
+    white-space:nowrap ;
+    overflow: hidden;
+    text-overflow: ellipsis;
     cursor: pointer;
     width: 150px;
   }

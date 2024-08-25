@@ -6,6 +6,7 @@ import { triggerNotification } from './Notification';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 const ResetPassword = () => {
+  const baseurl = process.env.REACT_APP_BASE_URL || '';
   const navigate = useNavigate();
   const form = useRef();
  const [type  , settype] = useState('password')
@@ -44,7 +45,7 @@ const ResetPassword = () => {
         return triggerNotification('New Password is not valid', 'error');
       }
 
-       await axios.post('http://localhost:4000/api/v1/resetpassword',data).then((response)=>{
+       await axios.post(baseurl+'/resetpassword',data).then((response)=>{
           const data = response.data
           if(data.success){
             navigate('/');

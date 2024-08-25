@@ -6,9 +6,15 @@ import ForgotPassword from "./Component/ForgotPassword";
 import Notification from "./Component/Notification";
 import Homepage from "./Component/Homepage";
 import ProtectedRoute from "./ProtectedRoute";
+import ProtectedAdminRoute from "./ProtectedAdminRoute";
 import ResetPassword from './Component/ResetPassword'
 import ChangePassword from "./Component/ChangePassword";
 import Profile from "./Component/Profile";
+import Edit from "./Component/Edit";
+import AdminHomepage from "./Component/AdminComponent/AdminHomepage";
+import AdminProfile from "./Component/AdminComponent/AdminProfile";
+import AdminEdit from "./Component/AdminComponent/AdminEdit";
+import UserPanel from "./Component/AdminComponent/UserPanel";
 
 function App() {
   return (
@@ -21,6 +27,7 @@ function App() {
       <Route path='/resetpassword' element={<ResetPassword/>} />
       <Route path='/forgotpassword' element={<ForgotPassword/>} />
       <Route path='/changepassword' element={<ChangePassword/>} />
+
       <Route path='/home' element={
       <ProtectedRoute>
       <Homepage/>
@@ -30,6 +37,34 @@ function App() {
       <ProtectedRoute>
       <Profile/>
       </ProtectedRoute>  
+      } />
+      <Route path='/edit' element={
+      <ProtectedRoute>
+      <Edit/>
+      </ProtectedRoute>
+      } />
+
+      <Route path='/adminhomepage' element={
+      <ProtectedAdminRoute>
+      <AdminHomepage/>
+       </ProtectedAdminRoute>
+      } />
+
+<Route path='/adminprofile' element={
+      <ProtectedAdminRoute>
+      <AdminProfile/>
+       </ProtectedAdminRoute>
+      } />
+      <Route path='/adminedit' element={
+      <ProtectedAdminRoute>
+      <AdminEdit/>
+       </ProtectedAdminRoute>
+      } />
+
+      <Route path='/userpanel' element={
+      <ProtectedAdminRoute>
+      <UserPanel/>
+       </ProtectedAdminRoute>
       } />
 
 
