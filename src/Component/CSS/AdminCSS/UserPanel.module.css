@@ -8,6 +8,53 @@
     background-attachment: fixed;
 }
 
+.dropdowndiv span{
+    color:white;
+    font-size: 20px;
+    text-shadow: 0px 0px 10px black;
+}
+.dropdowndiv {
+    
+    /* position: absolute; */
+    margin:15px 47px 0px 0px ;
+    /* margin-left: 80%; */
+    display: flex;
+    flex-direction: row;
+    justify-content: end;
+    align-items: end;
+   align-items: center;
+    text-align: center;
+
+    /* width: 150px; */
+    /* box-shadow: 3px 3px 3px 3px rgba(58, 58, 58, 0.333); */
+    /* border-radius: 5px; */
+  
+    /* backdrop-filter: blur(5px); */
+    /* box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.388); */
+  }
+
+.dropdown {
+
+    width: 150px;
+    padding: 10px;  
+    border:none;
+     border-radius: 5px;
+    background-color: #f0f0f042;
+    color: rgb(255, 255, 255);
+    /* font-weight: bold; */
+   font-size: 15px;
+  }
+
+  .dropdown:focus{
+    border: 1px solid #1146cb;
+  }
+  
+  .opt {
+    background-color: #a3a2a2b6; 
+  
+    border-radius: 0px;
+    color: black;
+  }
 
 .tableContainer{
     
@@ -20,10 +67,10 @@
     /* color: rgb(0, 0, 0); */
     background-color: rgba(194, 194, 194, 0.17);
     backdrop-filter: blur(10px);
-    margin-top: 2%;
+    margin-top: 10px;
     width: 95%;
     border-collapse: collapse;
-   box-shadow: 0px 0px 15px rgba(94, 94, 94, 0.341);
+   box-shadow: 0px 0px 15px rgba(94, 94, 94, 0.133);
    margin-bottom: 20px;
 }
 .table th{
@@ -51,6 +98,9 @@
     padding: 5px 8px 5px 8px;
   border: 2px solid rgba(40, 40, 40, 0.697);
   
+}
+.table td{
+    text-align: center;
 }
 .table tr:hover{
    background-color: rgba(240, 248, 255, 0.301);
@@ -102,4 +152,10 @@ justify-content: center;
     font-weight: 1000;
     padding: 4px;
     
+}
+
+.pagination button:disabled{
+    background-color: #898989b7;
+    color: rgb(220, 220, 220);
+    cursor: not-allowed;
 }

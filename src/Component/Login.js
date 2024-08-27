@@ -26,47 +26,80 @@ const Login = () => {
   );
   const validPassword = new RegExp('^(?=.*?[A-Za-z0-1]).{6,20}$');
 
-  const handleSubmit = () => {
-    try{
-    if (validEmail.test(data.email) && validPassword.test(data.password)) {
-      axios.post(baseurl+'/login', data)
-        .then((response) => {
+//   const handleSubmit = () => {
+//     try{
+//     if (validEmail.test(data.email) && validPassword.test(data.password)) {
+//       axios.post(baseurl+'/login', data)
+//         .then((response) => {
          
-            const dat = response.data;
-            if(dat.success){
-            // console.log(dat);
-            if(localStorage.getItem('token')){
-              localStorage.removeItem('token')
-            }
-            if(dat.status === '1'){
+//             const dat = response.data;
+//             if(dat.success){
+//             // console.log(dat);
+//             if(localStorage.getItem('token')){
+//               localStorage.removeItem('token')
+//             }
+//             if(dat.status === '1'){
 
-            localStorage.setItem('token',dat.token )
-            console.log(dat.token)
-            navigate('/adminhomepage')
-          return  triggerNotification('Welcome to Admin Panel')
-          }else{
-            localStorage.setItem('token',dat.token )
-            console.log(dat.token)
-            navigate('/home')
-          return  triggerNotification(dat.msg)
+//             localStorage.setItem('token',dat.token )
+//             console.log(dat.token)
+//             navigate('/adminhomepage')
+//           return  triggerNotification('Welcome to Admin Panel')
+//           }else{
+//             localStorage.setItem('token',dat.token )
+//             console.log(dat.token)
+//             navigate('/home')
+//           return  triggerNotification(dat.msg)
 
-          }
-          }else{
-    return triggerNotification(dat.msg, 'error');
+//           }
+//           }else{
+//     return triggerNotification(dat.msg, 'error');
 
-          }
+//           }
        
-        })
-        .catch((err) => {
-          console.log('Error in sending the request', err);
-        });
+//         })
+//         .catch((err) => {
+//           console.log('Error in sending the request', err);
+//         });
+//     } else {
+//       triggerNotification('Email or password is wrong!', 'error');
+//     }}catch(err){
+// // console.log(err)
+// return triggerNotification('Error in Sending Request !' , 'error')
+//     }
+//   };
+
+const handleSubmit = async () => {
+  try {
+    if (validEmail.test(data.email) && validPassword.test(data.password)) {
+      const response = await axios.post(`${baseurl}/login`, data);
+      const dat = response.data;
+      
+      if (dat.success) {
+        if (localStorage.getItem('token')) {
+          localStorage.removeItem('token');
+        }
+
+        localStorage.setItem('token', dat.token);
+
+        if (dat.status === '1') {
+          navigate('/adminhomepage');
+          return triggerNotification('Welcome to Admin Panel');
+        } else {
+          navigate('/home');
+          return triggerNotification(dat.msg);
+        }
+      } else {
+        return triggerNotification(dat.msg, 'error');
+      }
     } else {
       triggerNotification('Email or password is wrong!', 'error');
-    }}catch(err){
-// console.log(err)
-return triggerNotification('Error in Sending Request !' , 'error')
     }
-  };
+  } catch (err) {
+    console.error('Error in sending the request', err); // Log the error for debugging
+    triggerNotification('Server is Not Reachable !', 'error'); // Notify the user of the error
+  }
+};
+
 
   return (
     <div className={styles.loginPage}>

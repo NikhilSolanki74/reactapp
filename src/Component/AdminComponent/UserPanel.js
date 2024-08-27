@@ -3,29 +3,36 @@ import AdminNavbar from './AdminNavbar'
 import styles from '../CSS/AdminCSS/UserPanel.module.css'
 import axios from 'axios'
 import { triggerNotification } from '../Notification'
+import { useDispatch,useSelector } from 'react-redux'
+import { setLine } from '../../Redux/Features/UnderlineSlice'
+import { setPagination } from '../../Redux/Features/PaginationSlice'
 const UserPanel = () => {
-  const [pg , setPg] = useState({page:1 ,skip:0 , limit:13 , pages:0 })
+  const {pagination} = useSelector((state)=>state.pagination)
+  const dispatch = useDispatch();
+    const [pg , setPg] = useState({})
+
   const [users,setUsers] = useState({});
   const [check , setCheck] = useState(true)
 const baseurl  = process.env.REACT_APP_ADMIN_BASE_URL || '';
 const token = localStorage.getItem('token') || '';
-const [nodata ,setNoData] = useState('');
+let kk =pagination.offset+1;
 useEffect(()=>{
+  dispatch(setLine(2));
   if(!token){
        setCheck(false);
        return triggerNotification("User Not Authorized !", 'error')
   }
-    axios.post(baseurl+'/getregistereduser',{token:token,skip:pg.skip, limit:pg.limit}).then((response)=>{
+    axios.post(baseurl+'/getregistereduser',{token:token,offset:pagination.offset, limit:pagination.limit}).then((response)=>{
       const data = response.data;
       if(data.success){
-        setUsers({...data})
-        //start here
-        // setPg({page:1 , skip:data.skip})
+        setUsers({...data}) 
+       
+        dispatch(setPagination({pages:data.pages,count:data.count}))
+        console.log(pagination)
         return setCheck(false);
-      // return triggerNotification(data.msg)
+      
       }else{
         setCheck(false);
-        setNoData("No Data Found")
        return triggerNotification(data.msg,'error')
       }
 
@@ -33,17 +40,36 @@ useEffect(()=>{
       console.log(err)
     })
 
-},[])
+},[pg])
+
+
+const handleNext= async()=>{
+  
+  setPg({})
+  
+dispatch(setPagination({offset:pagination.offset+pagination.limit,page:pagination.page+1,next:pagination.page===pagination.pages-1?false:true,prev:pagination.page===0?false:true}))
+// console.log(pagination,'hhhh')
+  // await axios.post(baseurl+'/getregistereduser',{token:token,offset:pagination.offset, limit:pagination.limit}).then((response)=>{
+  //       const data = response.data
+  //       // console.log(data);
+  // })
+}
+
 
 const handlePrev=()=>{
+  setPg({})
+  dispatch(setPagination({offset:pagination.offset-pagination.limit,page:pagination.page-1,next:pagination.page===pagination.pages-1?false:true,prev:pagination.page===2?false:true}))
 
+}
+
+const handleLimit = (x) => {
+  // console.log(x);
+  const chk = Math.ceil(pagination.count/x)
+  dispatch(setPagination({page:1,offset:0,limit:x-0,previous:false,next:chk>1?true:false,}));
+  setPg({});
 
 }
 
-
-const handleNext=()=>{
-
-}
  
 if(check){
   return (
@@ -78,8 +104,19 @@ return(
   return (
     <div className={styles.container}>
     <AdminNavbar/>
-      <div className={styles.tableContainer}>
 
+<div className={styles.dropdowndiv}>
+<span>Rows :&nbsp; &nbsp;</span> 
+      <select value={pagination.limit}  className={styles.dropdown} onChange={(e)=>handleLimit(e.target.value)} >
+        <option value={10} className={styles.opt}>10</option>
+      <option value={12} className={styles.opt}>12</option>
+        <option value={20} className={styles.opt}>20</option>
+        <option value={50} className={styles.opt}>50</option>
+        <option value={100} className={styles.opt}>100</option>
+        <option value={500} className={styles.opt}>500</option>
+      </select>
+    </div>
+      <div className={styles.tableContainer}>
       
 <table className={styles.table}>
 <thead>
@@ -94,10 +131,10 @@ return(
 </thead>
 <tbody className={'tbody'}>
   
-   { users.userdata && users.userdata.map((data,index)=>{
+   {   users.userdata && users.userdata.map((data,index)=>{
     
     return (<tr key={index}>
-   <td >{index+1}</td>
+   <td >{kk++}</td>
     <td>{data.name}</td>
     <td>{data.email}</td>
     <td>{data.contact}</td>
@@ -123,9 +160,9 @@ return(
 
       </div>
       <div className={styles.pagination}>
-  <button onClick={()=> handlePrev()}>&#8592; Prev</button>
-  <h3>1 - 20</h3>
-  <button onClick={()=> handleNext()}>Next &#8594;</button>
+  <button onClick={()=> handlePrev()} disabled={!pagination.prev}>&#8592; Prev</button>
+  <h3>{pagination.page} - {pagination.pages}</h3>
+  <button onClick={()=> handleNext()} disabled={!pagination.next}>Next &#8594;</button>
 </div>
     </div>
   )

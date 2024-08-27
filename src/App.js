@@ -15,6 +15,7 @@ import AdminHomepage from "./Component/AdminComponent/AdminHomepage";
 import AdminProfile from "./Component/AdminComponent/AdminProfile";
 import AdminEdit from "./Component/AdminComponent/AdminEdit";
 import UserPanel from "./Component/AdminComponent/UserPanel";
+import AdminAnalytics from "./Component/AdminComponent/AdminAnalytics";
 
 function App() {
   return (
@@ -64,6 +65,12 @@ function App() {
       <Route path='/userpanel' element={
       <ProtectedAdminRoute>
       <UserPanel/>
+       </ProtectedAdminRoute>
+      } />
+
+<Route path='/analytics' element={
+      <ProtectedAdminRoute>
+      <AdminAnalytics/>
        </ProtectedAdminRoute>
       } />
 

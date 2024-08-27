@@ -1,8 +1,28 @@
-const { registermodel } = require("../dbConnection/db");
+const { registermodel, useractivity } = require("../dbConnection/db");
 const bcrypt = require("bcrypt");
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer')
 require('dotenv').config();
+
+
+const addEvent = async (id , action)=> {
+  const now  = Math.round(Date.now() / 1000);
+// console.log(now);
+  const newDoc =  new useractivity({
+    createdAt:now,
+    userId:id,
+    action:action
+    })
+    const savedData= await newDoc.save().catch((err)=>{
+console.log(err)
+return false;
+    });
+    if(savedData){
+      return true;
+    }else{
+      return false;
+    }
+}
 
 
 const checkToken= async (dt)=>{
@@ -42,15 +62,14 @@ const Signin = async (req, res) => {
 
      const salt = await bcrypt.genSalt(10)
      const hashpassword = await bcrypt.hash(password, salt).catch((err)=>{console.log(err);return res.json({ success: false, msg: "server error occured" })});
-     
-
-      
+          
           const userdata = new registermodel({
             name,
             email,
             password:hashpassword,
             contact,
           });
+          
          const userdetail = await userdata.save().catch((err) => {
            console.log(err);
               return res.json({
@@ -58,8 +77,9 @@ const Signin = async (req, res) => {
                 msg: "something wrong happen ,data not saved",
               });
             });
-            
-           const token =await jwt.sign({data:userdetail._id} ,process.env.JWT_SECRET,{expiresIn:'1d'} );
+           const event = await addEvent(userdetail._id , 'new Register');
+            // console.log(ddd)
+           const token = jwt.sign({data:userdetail._id} ,process.env.JWT_SECRET,{expiresIn:'1d'} );
            return res.json({
             success:true,
             msg:"User Registered Successfully",
@@ -109,8 +129,8 @@ const Login = async (req, res) => {
       }else{
 
         if(result){
-
-          const token =await jwt.sign({data:hashpass._id} ,process.env.JWT_SECRET,{expiresIn:'1d'} );
+          await addEvent(hashpass._id, 'User Login')
+          const token = jwt.sign({data:hashpass._id} ,process.env.JWT_SECRET,{expiresIn:'1d'} );
           return res.json({success:true,msg:'Login Successfully',token:token,status:hashpass.status })
         }else{
           console.log(result)
@@ -139,6 +159,7 @@ return res.json({success:false,msg:'Authentication Error !'})
       const id = decode.data;
       const data = await registermodel.findOne({_id:id},'name email contact status')
       if(data){
+        await addEvent(id,'Page Refreshed');
          return res.json({success:true,data:data})
       }else{
         return res.json({success:false,msg:"data not found"})
@@ -175,6 +196,7 @@ try {
    const newhashpass = await bcrypt.hash(newpassword , salt).catch((err)=>{console.log(err); return res.json({success:false,msg:'server error occured'})})
 
     await registermodel.findByIdAndUpdate(userdata._id ,{password:newhashpass}).then(()=>{
+      addEvent(userdata._id ,"User Password Changed without OTP")
       return res.json({
         success:true,
         msg:'Password changed Successfully'
@@ -216,7 +238,7 @@ if(!userdata){
 
 
   // await registermodel.findByIdAndUpdate(userdata._id ,{otp:otp})
-  const transporter =await nodemailer.createTransport({
+  const transporter = nodemailer.createTransport({
     service:'gmail',
    auth: {
        user: process.env.GOOGLE_EMAIL_ID,
@@ -311,43 +333,45 @@ let msg = {
 };
 
   
-   await transporter.sendMail(msg ,(err,info)=>{
+    transporter.sendMail(msg ,(err,info)=>{
        if(err){
          console.log(err)
          return res.json({success:false,msg:'Error occured on mail send'})
        }else{
+         addEvent(userdata._id,'OTP send for Password change')
          return res.json({success:true,msg:'Check your Email, Reset URL Sent Successfully'})
        }
    } )
 
 }
 
-const checkOTP = async (req,res)=>{
-   const {newpassword , email ,otp } = req.body;
+// const checkOTP = async (req,res)=>{
+//    const {newpassword , email ,otp } = req.body;
    
-   const userdata = await registermodel.findOne({email:email},'otp _id')
+//    const userdata = await registermodel.findOne({email:email},'otp _id')
      
-   if(!userdata){
-    return res.json({success:false,msg:'server error occured'})
-   }
-   const dbotp = userdata.otp.toString();
-  //  console.log(otp,'hello',dbotp)
-   if(otp !== dbotp ){
-    return res.json({success:false, msg:"OTP not match !"})
-   }
-      const salt =await  bcrypt.genSalt(10);
-      // console.log(typeof(newpassword))
-      const hash =await bcrypt.hash(newpassword ,salt)
-   await registermodel.findByIdAndUpdate(userdata._id , {password:hash}).then(()=>{
-    return res.json({success:true,msg:'Password Changed Successfully'
-    })
-   }).catch((err)=>{
-    console.log(err)
-    return res.json({success:false,msg:'Error in save password'})
-   })
+//    if(!userdata){
+//     return res.json({success:false,msg:'server error occured'})
+//    }
+//    const dbotp = userdata.otp.toString();
+//   //  console.log(otp,'hello',dbotp)
+//    if(otp !== dbotp ){
+//     return res.json({success:false, msg:"OTP not match !"})
+//    }
+//       const salt =await  bcrypt.genSalt(10);
+//       // console.log(typeof(newpassword))
+//       const hash =await bcrypt.hash(newpassword ,salt)
+//    await registermodel.findByIdAndUpdate(userdata._id , {password:hash}).then(()=>{
+//     addEvent(userdata._id  ,'Password changed with OTP')
+//     return res.json({success:true,msg:'Password Changed Successfully'
+//     })
+//    }).catch((err)=>{
+//     console.log(err)
+//     return res.json({success:false,msg:'Error in save password'})
+//    })
 
 
-}
+// }
 
 const changePassword = async (req,res) =>{
   try {
@@ -374,7 +398,7 @@ return res.json({success:false, msg:'server error occured'})
          }
        
 
-
+           addEvent(id , "password changed with URL")
         await registermodel.findByIdAndUpdate(id,{password:hash,token:'empty'})
         console.log('password changed successfully')
         return res.json({success:true,msg:"Password Changed Successfully"
@@ -408,7 +432,7 @@ const removeAccount = async (req,res)=>{
           return res.json({success:false,msg:'Invalid Input data'})
         }
         await registermodel.findByIdAndDelete(id )
-          
+          addEvent(id ,'Account Removed by user')
         return res.json({success:true,msg:'Accound Removed Successfully '}) 
          
       } catch (error) {
@@ -432,7 +456,7 @@ if(!tokenData._id){
  
 const dataUpdate = await registermodel.findByIdAndUpdate(tokenData._id,{name:data.name , contact:data.contact},{new:true})
 if(dataUpdate){
-
+   addEvent(tokenData._id , 'Profile Data Update')
   return res.json({success:true,msg:'User Details Changed Successfully',tokenData})
 }else{
 
@@ -446,7 +470,11 @@ if(dataUpdate){
   }
 }
 
+const logout= async (req,res) => {
+  const {id} = req.body;
+   addEvent(id, 'Logged Out')
+   
+}
 
 
-
-module.exports = { Signin, Login,getUserData,resetPassword ,getOTP,checkOTP,changePassword,removeAccount,edituser};
+module.exports = { Signin, Login,getUserData,resetPassword ,getOTP,changePassword,removeAccount,edituser,logout};

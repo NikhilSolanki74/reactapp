@@ -81,7 +81,7 @@ const ChangePassword = () => {
           handleSubmit();
         }}
       >
-        <h2>Change Password Page</h2>
+        <h2>Change Password </h2>
         <div className={styles.inputGroup}>
           <FontAwesomeIcon icon={faLock} className={styles.icon} />
           <input style={{color:'white',border:'1px solid grey #656565'}}

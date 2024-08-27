@@ -1,4 +1,4 @@
-const { registermodel } = require("../dbConnection/db");
+const { registermodel ,useractivity} = require("../dbConnection/db");
 const bcrypt = require("bcrypt");
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
@@ -38,7 +38,7 @@ const getAdminData = (req,res) =>{
           const id = decode.data;
           const data = await registermodel.findOne({_id:id},'name email contact status')
           if(data){
-            console.log('data succccess',data,'end')
+            // console.log('data succccess',data,'end')
              return res.json({success:true,data:data})
           }else{
             return res.json({success:false,msg:"data not found a2"})
@@ -66,7 +66,7 @@ const removeAccount = async (req,res)=>{
     await registermodel.findByIdAndDelete(id )
       
     return res.json({success:true,msg:'Accound Removed Successfully '}) 
-     
+
   } catch (error) {
     console.log(err)
    return res.json({success:false , msg:'Server Error Occured'})
@@ -118,15 +118,15 @@ const getRegisteredUser =async (req ,res) =>{
 
     
     const limit = data.limit || 13;
-    const skip = data.skip || 0;
+    const offset = data.offset || 0;
 
 
-  const userdata = await registermodel.find({status:'0'},'name email contact').limit(limit).skip(skip)
+  const userdata = await registermodel.find({status:'0'},'name email contact').limit(limit).skip(offset)
   const count  = await registermodel.countDocuments({status:{$eq:'0'}})
   const pages = Math.ceil(count/limit)
   // console.log(count, 'hellll')
    if(userdata){
-     return res.json({success:true , msg:"data fetched Successfully",userdata ,pages })
+     return res.json({success:true , msg:"data fetched Successfully",userdata ,pages,count })
 
    }else{
     return res.json({success:false , msg:'Data Not Found !'})
@@ -140,4 +140,87 @@ const getRegisteredUser =async (req ,res) =>{
 }
 
 
-module.exports = {getAdminData,removeAccount,edituser,getRegisteredUser}
+const getChart =async (req,res) => {
+  try {
+    const token = req.body;
+  const chk =await checkToken(token);
+  if(!chk){
+return res.json({success:false, msg:'Invalid User !'})
+  }
+  const country =await registermodel.aggregate([{
+    $group:{
+         _id:"$country",
+          count:{$sum:1}
+    }
+   }
+    ])
+    let countrydata = {};
+
+     country.forEach((doc)=>{
+      const dd = doc._id
+       countrydata[dd] = doc.count;
+      // countrydata[doc._id] = doc.count
+     })
+  //  console.log(countrydata);
+   const total = await registermodel.countDocuments({}) 
+ 
+   const datetoday =new Date();
+      const date = new Date(datetoday.setHours(0,0,0,0));
+      const Mdate = Math.floor(date.getTime()/1000);
+      const Ndate = Mdate + 86400;
+// return console.log(Mdate);
+   const activeUser = await useractivity.aggregate([
+    {
+           $match:{
+            createdAt:{$gt:Mdate,$lt:Ndate}
+           }
+   },{
+           $group:{
+            _id:"$userId"
+            
+           }
+     },
+    {
+            $count:'activeUser'
+   }
+        ])
+
+
+const today = new Date();
+const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+const startmonth = Math.floor(firstDayOfMonth.getTime() / 1000);
+
+
+const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0,23,59,59,999);
+const endmonth = Math.floor(lastDayOfMonth.getTime() / 1000);
+
+        const Mactive = await useractivity.aggregate([
+          {
+                 $match:{
+                  createdAt:{$gt:startmonth,$lt:endmonth}
+                 }
+         },{
+                 $group:{
+                  _id:"$userId"
+                  
+                 }
+           },
+          {
+                  $count:'Mactive'
+         }
+              ])
+//  console.log(activeUser);
+
+
+ return res.json({success:true ,countrydata , total,activeUser,Mactive})
+    
+  } catch (error) {
+    console.log(error);
+   return res.json({success:false ,msg:'Server Error Occured'})
+  }
+  
+}
+
+
+
+module.exports = {getAdminData,removeAccount,edituser,getRegisteredUser,getChart}

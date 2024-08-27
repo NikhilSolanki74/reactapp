@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import styles from '../CSS/AdminCSS/AdminProfile.module.css'
 import AdminNavbar from './AdminNavbar'
 import { useSelector,useDispatch } from 'react-redux';
@@ -6,6 +6,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom'; 
 import { triggerNotification } from '../Notification';
 import { setUser } from '../../Redux/Features/UserSlice';
+import { setLine } from '../../Redux/Features/UnderlineSlice';
 const AdminProfile = () => {
   const baseurl = process.env.REACT_APP_ADMIN_BASE_URL || '';
     const dispatch = useDispatch()
@@ -14,7 +15,7 @@ const AdminProfile = () => {
     const handleEdit=()=>{
       navigate('/adminedit')
     }
-  
+  useEffect(()=>{dispatch(setLine(0))},[]);
   
   const handleRemove=()=>{
     if(!window.confirm('Do you really want to Delete your Account Permanently !')){

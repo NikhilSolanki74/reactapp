@@ -20,6 +20,10 @@
     height: 40px;
     margin-right: 10px;
   }
+
+  .list li{
+    font-size: 17px;
+  }
   
   .navLinks .list {
     cursor: pointer;
@@ -30,10 +34,10 @@
     
   }
   .item1:hover,.item2:hover,.item3:hover{
-    transition:.2s linear;
-        color: rgba(202, 201, 201, 0.466);
+    transition:.25s linear;
+        color: rgb(0, 0, 0);
         /* font-size: large; */
-    text-shadow: 1px 1px rgba(24, 24, 24, 0.548);
+    text-shadow: 0px 0px 15px rgba(255, 255, 255, 0.627);
 
   } 
 
