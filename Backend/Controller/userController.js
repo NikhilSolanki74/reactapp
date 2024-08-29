@@ -50,7 +50,7 @@ return false;
 const Signin = async (req, res) => {
   try {
     if (req.body) {
-      const { name, email, password, contact } = req.body;
+      const { name, email, password, contact,country,role } = req.body;
       const checkEmail = await registermodel.findOne({ email: email });
 
       if (checkEmail) {
@@ -59,7 +59,12 @@ const Signin = async (req, res) => {
           msg: "This Email is already Exists",
         });
       }
-
+      let status = '0'
+  if(role === 'User'){
+     status = '0';
+  }else if(role === 'Seller'){
+     status = '2';
+  }
      const salt = await bcrypt.genSalt(10)
      const hashpassword = await bcrypt.hash(password, salt).catch((err)=>{console.log(err);return res.json({ success: false, msg: "server error occured" })});
           
@@ -68,6 +73,8 @@ const Signin = async (req, res) => {
             email,
             password:hashpassword,
             contact,
+            country,
+            status,
           });
           
          const userdetail = await userdata.save().catch((err) => {
@@ -77,7 +84,7 @@ const Signin = async (req, res) => {
                 msg: "something wrong happen ,data not saved",
               });
             });
-           const event = await addEvent(userdetail._id , 'new Register');
+           addEvent(userdetail._id , 'New Register');
             // console.log(ddd)
            const token = jwt.sign({data:userdetail._id} ,process.env.JWT_SECRET,{expiresIn:'1d'} );
            return res.json({
@@ -106,13 +113,13 @@ const Signin = async (req, res) => {
 
 const Login = async (req, res) => {
   try {
-    if(!req.body && !req.body.email && !req.body.password){
+    if(!req.body && !req.body.email && !req.body.password && !req.body.country){
         return res.json({
             success: false,
             msg: "data not Valid ,Something wrong happen",
           });
     }
-    const { email, password } = req.body;
+    const { email, password,country } = req.body;
 
     const checkemail = await registermodel.findOne({email:email})
     if(!checkemail){
@@ -121,16 +128,19 @@ const Login = async (req, res) => {
             msg: "Email Not Exists, Please check again",
           });
     }
-    const hashpass = await registermodel.findOne({_id:checkemail._id},'password _id status')
+    const hashpass = await registermodel.findOne({_id:checkemail._id},'password _id status country')
     
-   await bcrypt.compare(password,hashpass.password ,async (err,result)=>{
+   bcrypt.compare(password,hashpass.password ,async (err,result)=>{
     if (err) {
         return res.json({ success: false, msg: "server error occured" });
       }else{
 
         if(result){
+          if(hashpass.status == '0'){
           await addEvent(hashpass._id, 'User Login')
+        }
           const token = jwt.sign({data:hashpass._id} ,process.env.JWT_SECRET,{expiresIn:'1d'} );
+        //  return console.log(hashpass.status);
           return res.json({success:true,msg:'Login Successfully',token:token,status:hashpass.status })
         }else{
           console.log(result)

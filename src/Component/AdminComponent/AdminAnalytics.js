@@ -6,8 +6,9 @@ import { useDispatch } from 'react-redux'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Chart from "react-apexcharts";
 import axios from 'axios';
-import { faUsers,faEye,faCircle ,faStopwatch} from '@fortawesome/free-solid-svg-icons';
+import { faUsers,faUser,faCircle ,faStopwatch} from '@fortawesome/free-solid-svg-icons';
 import { faCalendarCheck } from '@fortawesome/free-solid-svg-icons/faCalendarCheck'
+import { triggerNotification } from '../Notification'
 
 
 const AdminAnalytics = () => {
@@ -15,25 +16,82 @@ const AdminAnalytics = () => {
     const token = localStorage.getItem('token') || 'notoken';
     const dispatch = useDispatch();
     const [country ,setCountry] = useState({India:100, China:0, Nepal:0, Pakistan:0});
-    const [textfeild ,setTextFeild] = useState({total:0,active:0,Mactive:0,AET:10})
+    const [textfeild ,setTextFeild] = useState({total:0,active:0,Mactive:0,engMin:0,engSec:0,engHour:0})
+    const [lineArr , setLineArr] = useState({dayArr:[],countArr:[5,55,5,55,5,55,5]});
+    const [barArr , setBarArr] = useState({dayArr:[],countArr:[11,33,1,2,3,33,4],registered:0});
+
     useEffect(()=>{
         dispatch(setLine(3));
          try {
             
          axios.post(`${baseurl}/getchart` , {token:token}).then((response)=>{
             const data = response.data;
-              console.log(data);
+            if(!data.success){
+              return triggerNotification('Error in chart data','error')
+ 
+             }
+              // console.log(data);
+              if(!data.activeUser[0]){
+                return triggerNotification('Failed in data fetch','error')
+              }
               setTimeout(()=>{
                   
                   setCountry(data.countrydata);  
                 setTextFeild((dt)=>{return {...dt,total:data.total,active:data.activeUser[0].activeUser,Mactive:data.Mactive[0].Mactive}})
               },1000)
+
+              axios.post(`${baseurl}/getengagementtime`, {token:token}).then((response)=>{
+            const data = response.data;
+            if(!data.success){
+              return triggerNotification('Error in engagement time data','error')
+ 
+             }
+            if(!data.minute && !data.second){
+              return triggerNotification('Error in fetching chart data','error')
+             }
+            // console.log(data,'hhhh')
+            setTimeout(()=>{
+                  setTextFeild((dt)=>{return {...dt, engMin:data.minute, engSec:data.second,engHour:data.hour}})
+            },1000)
+              })
           });
+
+          axios.post(`${baseurl}/getline`, {token:token}).then((response)=>{
+            const data = response.data;
+            
+            if(!data.success){
+              return triggerNotification('Error in charts data ','error')
+ 
+             }
+             if(!data.days && !data.userCount){
+              return triggerNotification('Error in fetching Line chart data','error')
+             }
+              setTimeout(() => {
+                setLineArr({dayArr:data.days, countArr:data.userCount})
+              }, 1000);
+          })
+          
+          axios.post(`${baseurl}/getlinebar`, {token:token}).then((response)=>{
+            const data = response.data;
+            if(!data.success){
+             return triggerNotification('Error in fetching Line chart data','error')
+
+            }
+            if( data.register >= 0 && data.userCount >= 0){
+             return triggerNotification('Error in fetching Line chart data','error')
+            }
+            setTimeout(() => {
+              
+              setBarArr({countArr:data.userCount,dayArr:data.days,registered:data.register})
+            }, 1000);
+            // console.log(data)
+          })
+
          } catch (error) {
-            console.log(error)
+          triggerNotification('data not fatched')
+            console.log(error);
+
          }
-
-
 
     },[])
 
@@ -44,7 +102,7 @@ const AdminAnalytics = () => {
             id: "basic-bar"
           },
           xaxis: {
-            categories: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+            categories: lineArr.dayArr,
             labels: {
               style: {
                 fontSize: '12px',  
@@ -67,7 +125,7 @@ const AdminAnalytics = () => {
         series: [
           {
             name: "Users",
-            data: [30, 40, 45, 50, 49, 60, 70, 91]
+            data: lineArr.countArr
           }
         ]
       };
@@ -77,7 +135,7 @@ const AdminAnalytics = () => {
             id: "basic-bar"
           },
           xaxis: {
-            categories: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+            categories: barArr.dayArr,
             labels: {
               style: {
                 fontSize: '12px',  
@@ -87,6 +145,7 @@ const AdminAnalytics = () => {
             }
           },
           yaxis: {
+          
       labels: {
         style: {
           fontSize: '13px',  
@@ -99,9 +158,13 @@ const AdminAnalytics = () => {
         },
         series: [
           {
-            name: "Users",
-            data: [30, 40, 15, 50, 49, 30, 70]
-          }
+            name: "Total Active Users",
+            data: lineArr.countArr,
+         },
+         {
+          name: "Registered User",
+            data: barArr.countArr,
+         }
         ]
       };
    
@@ -139,9 +202,10 @@ const AdminAnalytics = () => {
         <div className={styles.c1}>
           <div className={styles.text}>
            <label><FontAwesomeIcon icon={faUsers}/>&nbsp; Total Users:<span> {textfeild.total}</span> </label>
-           <label><FontAwesomeIcon icon={faCircle} size="2xs" style={{color: "#0bf427",}} />&nbsp; Current Active:<span> {textfeild.active}</span></label>
+           <label><FontAwesomeIcon icon={faCircle} size="2xs" style={{color: "#0bf427",}} />&nbsp; Today Active:<span> {textfeild.active}</span></label>
+           <label><FontAwesomeIcon icon={faUser}  />&nbsp; Today Registered:<span> {barArr.registered}</span></label>
            <label><FontAwesomeIcon icon={faCalendarCheck}/>&nbsp; Monthly Active:<span> {textfeild.Mactive}</span></label>
-           <label><FontAwesomeIcon size="lg" icon={faStopwatch} style={{color: "#006ec2",}} />&nbsp; Avg. Engagement Time:<span> {textfeild.AET} Min. </span></label>
+           <label><FontAwesomeIcon size="lg" icon={faStopwatch} style={{color: "#006ec2",}} />&nbsp; Avg. Engagement Time:<span>{textfeild.engHour===0 ? " " : ` ${textfeild.engHour} Hour`} {textfeild.engMin} Minute {textfeild.engSec} Second </span></label>
           </div>
         <Chart
         options={state2.options}
@@ -152,7 +216,7 @@ const AdminAnalytics = () => {
             />
         </div>
         <div className={styles.c2}>
-
+          <label><FontAwesomeIcon size="sm" style={{color: "#3268ff",}} icon={faUser} />&nbsp; Active Users In Last 7 Days</label>
           <Chart
             options={state.options}
             series={state.series}

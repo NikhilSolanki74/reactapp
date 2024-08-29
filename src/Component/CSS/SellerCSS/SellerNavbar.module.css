@@ -1,5 +1,4 @@
-
-  .navbar {
+.navbar {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -68,4 +67,3 @@
     cursor: pointer;
     width: 90px;
   }
-  

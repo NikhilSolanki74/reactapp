@@ -8,6 +8,7 @@ app.use(cors());
 
 app.use('/api/v1/user/',require('./Routes/Route'))
 app.use('/api/v1/admin/',require('./Routes/AdminRoute'))
+app.use('/api/v1/seller/',require('./Routes/SellerRoute'))
 app.listen('4000',(err)=>{
     if(err){
         console.log(err)

@@ -111,7 +111,7 @@ const getRegisteredUser =async (req ,res) =>{
     }
   //  console.log(data);
    const verify = await checkToken(data)
-   console.log(verify)
+  //  console.log(verify,'heheh')
   if(!verify){
     return res.json({success:false , msg:'User Not Verified'})
   }
@@ -188,6 +188,7 @@ return res.json({success:false, msg:'Invalid User !'})
 
 const today = new Date();
 const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+
 const startmonth = Math.floor(firstDayOfMonth.getTime() / 1000);
 
 
@@ -222,5 +223,225 @@ const endmonth = Math.floor(lastDayOfMonth.getTime() / 1000);
 }
 
 
+const getEngagmentTime = async (req,res) =>{
+  try {
+    const token = req.body;
+  const chk =await checkToken(token);
+  if(!chk){
+return res.json({success:false, msg:'Invalid User !'})
+  }
+    
 
-module.exports = {getAdminData,removeAccount,edituser,getRegisteredUser,getChart}
+ const time = new Date();
+ const ctime = Math.floor(time.getTime()/1000);
+
+  const ptime = ctime - 86400;
+ const eng =  await useractivity.aggregate([
+  {
+    $group: {
+      _id: "$userId",
+      timestamps: { $addToSet: "$createdAt" }
+    }
+  },
+  {
+    $project: {
+      _id: 1,
+      timestamps: {
+        $filter: {
+          input: "$timestamps",
+          as: "timestamp",
+          cond: {
+            $and: [
+              { $gte: ["$$timestamp", ptime] },
+              { $lte: ["$$timestamp",ctime ] }
+            ]
+          }
+        }
+      }
+    }
+  },
+  {
+    $project: {
+      _id: 1,
+      timestamps: { $sortArray: { input: "$timestamps", sortBy: 1 } }
+    }
+  },
+  {
+    $sort: { _id: -1 }
+  },
+  {
+    $limit: 50
+  }
+])
+
+  let count = 0;
+  const avg = [];
+
+  eng.forEach((doc)=>{
+       const arr = doc.timestamps;
+      //  let count = 0;
+       for(let i =0; i<arr.length-1;i++){
+          const n1 = arr[i+1]- arr[i];
+          if(n1<=300){
+               count += n1;
+          }
+       }
+       avg.push(count);
+       count=0;
+  })
+    
+  // console.log(avg)
+  let totalTime =0;
+   for(let i=0; i<avg.length ; i++){
+      totalTime += avg[i];
+   }
+    const t = Math.round(totalTime/avg.length);
+  //  const t = 7666;
+      const hour = Math.floor(t/3600)
+      const minute = Math.floor((t % 3600)/60);
+      const second = ((t%3600)%60);
+      // console.log(minute,' ',second,'',t)
+
+  return res.json({success:true,hour , minute, second})
+  } catch (error) {
+    console.log(error);
+   return res.json({success:false ,msg:'Server Error Occured'})
+  }
+  
+}
+
+const getLine = async (req,res) =>{
+try {
+  const token = req.body;
+  const chk =await checkToken(token);
+  if(!chk){
+return res.json({success:false, msg:'Invalid User !'})
+  }
+   
+
+  const d = new Date();
+  const cd = new Date(d.getFullYear(),d.getMonth(),d.getDate())
+const date =Math.floor((cd.getTime()/1000)-1);
+const dayArr = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+// console.log(dayArr[d.getDay()])
+  const days = [];
+  const userCount = [];
+  const day = 86400;
+  let startdate = date;
+  let backdate = startdate - day ;
+  for(let i=0;i<7;i++){
+      const dt =await useractivity.aggregate([
+        {
+          $match:{
+            createdAt:{$lt:startdate,$gt:backdate}
+          }
+        },{
+          $group:{
+          _id:'$userId'
+          //  count:{$sum:1}
+          }
+        }
+      ])
+       const td = new Date(startdate*1000);
+       days.push(dayArr[td.getDay()]);
+       userCount.push(dt.length);
+      // arr[dayArr[td.getDay()]] = dt.length;
+
+      startdate = backdate;
+      backdate = startdate - day;
+  }
+if(!days && !userCount){
+  return res.json({success:false});
+}
+
+days.reverse();
+userCount.reverse();
+
+return res.json({success:true,days:days ,userCount:userCount})  
+
+} catch (error) {
+  console.log(error);
+  return res.json({success:false,msg:'Server Error Occured!'});
+}
+}
+
+
+const getLineBar = async (req,res) =>{
+    try {
+      const token = req.body;
+      const chk =await checkToken(token);
+      if(!chk){
+    return res.json({success:false, msg:'Invalid User !'})
+      }
+
+
+      const d = new Date();
+      const cd = new Date(d.getFullYear(),d.getMonth(),d.getDate())
+    const date =Math.floor((cd.getTime()/1000)-1);
+    const dayArr = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+    // console.log(dayArr[d.getDay()])
+      const days = [];
+      const userCount = [];
+      const day = 86400;
+      let startdate = date;
+      let backdate = startdate - day ;
+      for(let i=0;i<7;i++){
+          const dt =await useractivity.aggregate([
+            {
+              $match:{
+                createdAt:{$lt:startdate,$gt:backdate},
+                action:{$eq:'New Register'}
+              }
+            },{
+              $group:{
+              _id:'$userId'
+              //  count:{$sum:1}
+              }
+            }
+          ])
+           const td = new Date(startdate*1000);
+           days.push(dayArr[td.getDay()]);
+           userCount.push(dt.length);
+          // arr[dayArr[td.getDay()]] = dt.length;
+    
+          startdate = backdate;
+          backdate = startdate - day;
+      }
+    if( !userCount){
+      return res.json({success:false});
+    }
+
+
+const dt =await useractivity.aggregate([
+            {
+              $match:{
+                createdAt:{$lt:(d.getTime()/1000),$gt:(date+1)},
+                action:{$eq:'New Register'}
+              }
+            },
+            {
+              $group:{
+                _id:"$userId"
+              }
+            }
+          ])
+
+          const register = dt.length;
+    
+    days.reverse();
+    userCount.reverse();
+    
+
+
+    // console.log(days,' ',userCount)
+
+
+      return res.json({success:true,userCount:userCount,days:days,register:register})
+    } catch (error) {
+      console.log(error);
+      return res.json({success:false,msg:'Server Error Occured!'});
+    }
+}
+
+
+module.exports = {getAdminData,removeAccount,edituser,getRegisteredUser,getChart,getLine,getEngagmentTime,getLineBar}

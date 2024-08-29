@@ -4,25 +4,31 @@ import {useDispatch,useSelector} from 'react-redux'
 import { Navigate,useNavigate } from 'react-router-dom'
 import { setUser } from './Redux/Features/UserSlice'
 import Loading from './Component/Loading'
+import { triggerNotification } from './Component/Notification'
 
-const ProtectedRoute = ({children}) => {
+const ProtectedSellerRoute = ({children}) => {
   const navigate = useNavigate();
-  const baseurl = process.env.REACT_APP_BASE_URL || '';
+  const baseurl = process.env.REACT_APP_SELLER_BASE_URL || '';
   const dispatch = useDispatch();
   const {user} = useSelector(state => state.user)
 const [check ,setCheck] = useState(false)
-  const getuserdata = async () =>{
+  const getsellerdata = async () =>{
        try {
-        const token = localStorage.getItem('token')
-        await axios.post(baseurl+'/getuserdata',{token:token}).then((response)=>{
+        const token = localStorage.getItem('token') || '';
+        await axios.post(baseurl+'/getsellerdata',{token:token}).then((response)=>{
            const data = response.data;
-           if(data.success && data.data.status  === '0'){
-              dispatch(setUser(data.data))
-            //   setCheck(true);
+        //   return console.log(data)
+           if(data.success && data.data.status === '2'){
+    
+            
+             return dispatch(setUser(data.data))
+            
            }else{
                localStorage.clear()
-               
-               return <Navigate to='/' />
+             navigate('/')
+
+              
+              return triggerNotification(data.msg,'error')
        }
         })
         
@@ -40,8 +46,8 @@ const [check ,setCheck] = useState(false)
  
   useEffect(()=>{
    if(!user){
-    getuserdata();
-  }else if(user.status === '0'){
+    getsellerdata();
+  }else if(user.status === '2'){
     setCheck(true)
    }else{
     localStorage.removeItem('token')
@@ -62,9 +68,6 @@ const [check ,setCheck] = useState(false)
     return <Navigate to='/'/>
   }
 
-
-
-
 }
 
-export default ProtectedRoute
+export default ProtectedSellerRoute

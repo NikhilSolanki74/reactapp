@@ -1,4 +1,15 @@
-
+.container {
+    background-image: url('../leaf.jpg');
+    background-attachment: fixed;
+    background-size: cover;
+    background-position:center;
+    height: 130vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background-color: linear-gradient(#3c3b3b51,rgba(168, 168, 168, 0.623));
+  }
+  
   .navbar {
     display: flex;
     justify-content: space-between;
@@ -52,9 +63,6 @@
     margin-right: 10px;
   }
   .profile label{
-    white-space:nowrap ;
-    overflow: hidden;
-    text-overflow: ellipsis;
     cursor: pointer;
     width: 150px;
   }
@@ -68,4 +76,16 @@
     cursor: pointer;
     width: 90px;
   }
+  
+
+  
+
+  
+  
+
+  
+  body::-webkit-scrollbar {
+    display: none;
+  }
+  
   

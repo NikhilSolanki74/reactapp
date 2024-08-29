@@ -48,11 +48,7 @@ const handleNext= async()=>{
   setPg({})
   
 dispatch(setPagination({offset:pagination.offset+pagination.limit,page:pagination.page+1,next:pagination.page===pagination.pages-1?false:true,prev:pagination.page===0?false:true}))
-// console.log(pagination,'hhhh')
-  // await axios.post(baseurl+'/getregistereduser',{token:token,offset:pagination.offset, limit:pagination.limit}).then((response)=>{
-  //       const data = response.data
-  //       // console.log(data);
-  // })
+
 }
 
 
@@ -141,22 +137,14 @@ return(
     <td>{data._id}</td>
    </tr>
     ) 
-
-      
-    
+ 
    })
    
    } 
-   
-      
-   
+  
    
 </tbody>
 </table>
-
-
-
-
 
       </div>
       <div className={styles.pagination}>

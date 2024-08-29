@@ -16,6 +16,8 @@ import AdminProfile from "./Component/AdminComponent/AdminProfile";
 import AdminEdit from "./Component/AdminComponent/AdminEdit";
 import UserPanel from "./Component/AdminComponent/UserPanel";
 import AdminAnalytics from "./Component/AdminComponent/AdminAnalytics";
+import SellerHomepage from "./Component/SellerComponent/SellerHomepage";
+import ProtectedSellerRoute from "./ProtectedSellerRoute";
 
 function App() {
   return (
@@ -74,6 +76,11 @@ function App() {
        </ProtectedAdminRoute>
       } />
 
+<Route path='/sellerhome' element={
+      <ProtectedSellerRoute>
+      <SellerHomepage/>
+       </ProtectedSellerRoute>
+      } />
 
      </Routes>
     </Router>   

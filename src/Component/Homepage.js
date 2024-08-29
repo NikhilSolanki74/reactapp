@@ -4,7 +4,7 @@ import {useSelector} from "react-redux";
 import { useNavigate } from 'react-router-dom';
 import Navbar from './Navbar';
 const Homepage = () => {
-  const navigate  = useNavigate()
+  // const navigate  = useNavigate()
 const userdata = useSelector((state)=> state.user)
 console.log(userdata);
 
@@ -13,8 +13,8 @@ const name =  userdata !== null ? userdata.user.name : 'user';
   return (
     <div className={styles.container}>
     <Navbar/> 
-
-      <div className={styles.heroSection}>
+   
+      {/* <div className={styles.heroSection}>
         <h1 className={styles.heroTitle}>Julissa.</h1>
         <p className={styles.heroText}>
           Pioneering the future of agriculture by integrating advanced technologies and innovative practices. Our mission is to create sustainable and efficient farming solutions that ensure a 
@@ -36,7 +36,7 @@ const name =  userdata !== null ? userdata.user.name : 'user';
   <div className={styles.footerBottom}>
     <p>&copy; 2024 Julissa. All rights reserved.</p>
   </div>
-</footer>
+</footer> */}
 
     </div>
   );

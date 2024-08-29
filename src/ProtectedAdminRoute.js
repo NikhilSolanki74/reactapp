@@ -47,8 +47,11 @@ const [check ,setCheck] = useState(false)
   useEffect(()=>{
    if(!user){
     getuserdata();
-   }else{
+   }else if(user.status === '1'){
     setCheck(true)
+   }else{
+    localStorage.removeItem('token')
+    navigate('/')
    }
 
   },[user])
