@@ -4,7 +4,7 @@
     background-size: cover;
     background-position:center;
     height: auto;
-    min-height: 90vh;
+    min-height: 100vh;
     gap: 30px;
     display: flex;
     flex-direction: column;

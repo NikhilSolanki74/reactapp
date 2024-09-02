@@ -1,7 +1,7 @@
 const { registermodel, productTable} = require("../dbConnection/db");
-// const bcrypt = require("bcrypt");
 const jwt = require('jsonwebtoken');
-// const nodemailer = require('nodemailer')
+let cloudinary = require('cloudinary').v2
+let fs = require('fs')
 require('dotenv').config();
 const multer = require('multer')
 
@@ -98,16 +98,17 @@ const getProductData = async (req,res)=>{
   }
 
     
-    const limit = data.limit || 13;
+    const limit = data.limit || 12;
     const offset = data.offset || 0;
 
 
   const productdata = await productTable.find({onMarket:'1'}).limit(limit).skip(offset)
   const count  = await productTable.countDocuments({onMarket:{$eq:'1'}})
-  const pages = Math.ceil(count/limit)
+  // const pages = Math.ceil(count/limit)
+  const more = offset+limit >= count ? false : true;
   // console.log(count, 'hellll')
    if(productdata){
-     return res.json({success:true , msg:"data fetched Successfully",productdata ,pages,count })
+     return res.json({success:true , msg:"data fetched Successfully",productdata ,count,more })
 
    }else{
     return res.json({success:false , msg:'Data Not Found !'})
@@ -159,9 +160,55 @@ function multerErrorHandler(err, req, res, next) {
   next();
 }
 
-const addProduct = (req,res) => {
+const addProduct =async (req,res) => {
     try {
-      console.log(req.file)
+       const token =await checkToken(req.body);
+//  return console.log(token);
+    if(!req.files || !token  || !req.body){
+      return res.json({success:false, msg:"Data Not Found!"});
+    }
+      // console.log(req.files)
+      const f = req.files;
+      let chk = true;
+      let image = "";
+        let images = [];
+       const date = new Date();
+       const st = date.getTime();
+      //  return console.log(st);
+        cloudinary.config({ 
+          cloud_name: process.env.CLOUD_NAME, 
+          api_key: process.env.API_KEY, 
+          api_secret: process.env.API_SECRET 
+        });
+       const dd = f.map( async (element,index) => {
+          
+         await cloudinary.uploader.upload(element.path,{public_id:st+element.filename}).then((result)=>{
+          fs.unlinkSync(element.path);
+          if(index === 0 ){
+            image = result.secure_url;
+            
+          }else{
+            images.push(result.secure_url)
+          }
+         }).catch((err)=>{
+          console.log(err);
+         })
+        });
+       await Promise.all(dd);
+        const {product , stock , sellerName , price ,description} = req.body;
+        const sellerId = token._id;
+        const prd = new productTable({
+          product ,stock , sellerName , price , description , image:image, images:images,sellerId
+        })
+        // console.log(image ,'jj', images);
+      await prd.save().then(()=>{
+        return res.json({success:true,msg:"Product Created Successfully"})
+      }).catch((err)=>{
+        console.log(err);
+        return res.json({success:false ,msg:"Server Error Occured !"})
+      })
+
+
       
     } catch (error) {
       console.log(error)

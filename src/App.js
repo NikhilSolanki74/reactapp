@@ -21,6 +21,7 @@ import ProtectedSellerRoute from "./ProtectedSellerRoute";
 import SellerEdit from "./Component/SellerComponent/SellerEdit";
 import SellerProfile from "./Component/SellerComponent/SellerProfile";
 import AddProduct from "./Component/SellerComponent/AddProduct";
+import SellerProduct from "./Component/SellerComponent/SellerProduct";
 
 function App() {
   return (
@@ -133,6 +134,14 @@ function App() {
           element={
             <ProtectedSellerRoute>
               <AddProduct />
+            </ProtectedSellerRoute>
+          }
+        />
+        <Route
+          path="/sellerproduct"
+          element={
+            <ProtectedSellerRoute>
+              <SellerProduct/>
             </ProtectedSellerRoute>
           }
         />

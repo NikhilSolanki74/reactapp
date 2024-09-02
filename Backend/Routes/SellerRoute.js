@@ -2,9 +2,6 @@ const express = require('express')
 const router = express.Router()
 const upload = require('../Controller/Uploader');
 
-
-
-
 const { getSellerData, logout, removeAccount,getProductData, edituser,addProduct,multerErrorHandler} = require('../Controller/sellerController');
 
 router.post('/getsellerdata',getSellerData);

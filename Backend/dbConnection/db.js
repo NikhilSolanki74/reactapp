@@ -24,13 +24,16 @@ const useractivity = mongoose.model("useractivity", model2);
 
 
 const model3 = new mongoose.Schema({
-  sellerId:{type:String,default:"66d0381ae614961e1db6262d"},
+  sellerId:{type:String,require:true},
+  sellerName:{type:String,required:true},
   product:{type:String, required:true},
   image:{type:String ,default:'https://res.cloudinary.com/dzjvyptwz/image/upload/v1720615989/1720615988241bs.jpg.jpg'},
   images:{type:Array,default:[]},
   price:{type:Number,required:true},
+  stock:{type:Number,required:true},
  description:{type:String,default:'this is the sample product in store'},
-  onMarket:{type:Number,default:'1'}
+  onMarket:{type:Number,default:'1'},
+  createdAt:{type:Date , default:Date.now()}
 });
 const productTable = mongoose.model("productTable", model3);
 

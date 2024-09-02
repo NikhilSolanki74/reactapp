@@ -23,7 +23,7 @@ const SellerNavbar = () => {
           <ul className={styles.list}>
             <li className={styles.item1} style={{textDecoration:linedata.l1 ? 'underline' : 'none',textUnderlineOffset:'4px'}}  onClick={()=> navigate('/sellerhome')}>Home</li>
             <li className={styles.item1} style={{textDecoration:linedata.l4 ? 'underline' : 'none',textUnderlineOffset:'4px'}} onClick={()=> navigate('/addproduct')}>Add Product</li>
-            <li className={styles.item1} style={{textDecoration:linedata.l2 ? 'underline' : 'none',textUnderlineOffset:'4px'}}>My Products</li>
+            <li className={styles.item1} style={{textDecoration:linedata.l2 ? 'underline' : 'none',textUnderlineOffset:'4px'}} onClick={()=> navigate('/sellerproduct')}>My Products</li>
             <li className={styles.item1 } style={{textDecoration:linedata.l3 ? 'underline' : 'none',textUnderlineOffset:'4px'}}>My Orders</li>
           </ul>
         </div>
