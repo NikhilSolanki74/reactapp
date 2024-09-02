@@ -27,8 +27,9 @@ const baseurl = process.env.REACT_APP_BASE_URL || '';
          if(dt.success){
              dispatch(setUser(dt.tokenData))
               triggerNotification(dt.msg)
+              
              navigate('/profile');
-             navigate(0);         
+            return navigate(0);         
             
          }else{
           return  triggerNotification(dt.msg,'error')

@@ -455,25 +455,25 @@ const removeAccount = async (req,res)=>{
 
 const edituser = async (req,res)=>{
   try {
+    
 const {data} = req.body;
 if(!data){
   return res.json({success:false,msg:"Data not Found"});
 }
 const tokenData =await checkToken(data)
-if(!tokenData._id){
+if(!tokenData || !tokenData._id){
   return res.json({success:false,msg:"Authorization failure !"})
-}else{
- 
+}
 const dataUpdate = await registermodel.findByIdAndUpdate(tokenData._id,{name:data.name , contact:data.contact},{new:true})
 if(dataUpdate){
-   addEvent(tokenData._id , 'Profile Data Update')
+  addEvent(tokenData._id , 'Profile Data Update')
   return res.json({success:true,msg:'User Details Changed Successfully',tokenData})
 }else{
 
   return res.json({success:false,msg:'Error in update details' })
 }
 
-} 
+
   } catch (error) {
     console.log(error)
     return res.json({success:false , msg:'server Error Occured'})

@@ -1,91 +1,66 @@
 .container {
-    background-image: url('../leaf.jpg');
+    background-image: url('../tree.jpg');
     background-attachment: fixed;
     background-size: cover;
     background-position:center;
-    height: 130vh;
+    height: auto;
+    min-height: 90vh;
+    gap: 30px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    background-color: linear-gradient(#3c3b3b51,rgba(168, 168, 168, 0.623));
-  }
-  
-  .navbar {
+  }  
+  .productGrid {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 30px;
+    margin: 0px;
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    box-shadow: 1px 5px rgba(0, 0, 0, 0.149);
-    padding: 20px;
-    background-color: rgba(108, 108, 108, 0.319);
-    backdrop-filter: blur(5px);
+    justify-content: space-evenly;
+    flex-wrap: wrap;
+    margin-bottom: 50px;
   }
-  
-  .logo {
-    display: flex;
-    align-items: center;
-    color: white;
-    font-size: 30px;
-  }
-  
-  .logo img {
-    height: 40px;
-    margin-right: 10px;
-  }
-  
-  .navLinks .list {
-    cursor: pointer;
-    display: flex;
-    list-style: none;
-    gap: 50px;
-    color: white;
-    
-  }
-  .item1:hover{
-    transition:.2s linear;
-        color: rgba(202, 201, 201, 0.466);
-        /* font-size: large; */
-    text-shadow: 1px 1px rgba(24, 24, 24, 0.548);
-
-  } 
-
-  
-  .profile {
-    display: flex;
-    align-items: center;
-    color: white;
-  }
-  
-  .profile img {
-    cursor: pointer;
-    height: 40px;
-    width: 40px;
-    border-radius: 50%;
-    margin-right: 10px;
-  }
-  .profile label{
-    cursor: pointer;
-    width: 150px;
-  }
-  
-  .profile button {
-    padding: 10px 13px;
-    border: none;
-    background-color: rgba(89, 89, 89, 0.681);
-    color: rgb(255, 255, 255);
-    border-radius: 20px;
-    cursor: pointer;
-    width: 90px;
-  }
-  
-
-  
-
-  
-  
-
   
   body::-webkit-scrollbar {
     display: none;
+  }
+
+  .button{
+    width: 10%;
+    padding: 10px;
+    border: none;
+    border-radius: 7px;
+    background: rgba(255, 255, 255, 0.727);
+    color: #282828;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    /* margin-top: 30px; */
+    box-shadow: 0px 0px 15px #0000006e;
+  }
+  .button:hover{
+    /* transform: scale(1.07); */
+    background-color: white;
+    /* transform: ; */
+  }
+
+  .loadmorediv{
+    display: flex;
+    flex-direction: column;
+    /* gap:10px; */
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 30px;
+  }
+
+  .button:disabled{
+    background-color: rgb(201, 201, 201);
+    cursor: not-allowed;
+  }
+
+  .button:disabled:hover{
+    background-color: rgb(201, 201, 201)
   }
   
   

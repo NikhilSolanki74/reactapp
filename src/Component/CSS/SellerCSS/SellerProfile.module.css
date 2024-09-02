@@ -1,0 +1,135 @@
+.container{
+    background-image: url('../tree.jpg');
+    background-attachment: fixed;
+    background-size: cover;
+    background-position:center;
+    height: 100vh;
+    display: flex;
+    /* width: 100%; */
+    flex-direction: column;
+    gap: 10%;
+    /* justify-content: space-between; */
+    /* align-items: center; */
+    background-color: linear-gradient(#3c3b3b51,rgba(168, 168, 168, 0.623));
+}
+
+.image img{
+    right: 33%;
+    top: 11%;
+    height: 150px;
+    position: absolute;
+    
+    transform: translateY(-77%);
+    
+    border-radius: 30%;
+}
+.profileprimary{
+    position: relative;
+    height: 500px;
+    width:450px;
+    margin-left: 36%;
+    border-radius: 20px;
+    border:none;
+    background-color: rgba(144, 144, 144, 0.359);
+    backdrop-filter: blur(5px);
+      box-shadow: 0px 0px 15px rgba(0, 0, 0, 63%);
+    color:rgb(255, 255, 255);
+    /* text-shadow: 1px 1px rgba(0, 0, 0, 0.708); */
+    display: flex;
+        
+    flex-direction: column;
+    align-items: center;
+    justify-content: end;
+
+}
+
+.profilediv{
+    position: relative;
+    
+    height: 400px;
+    width:400px;
+    margin-bottom: 4%;
+    border-radius: 20px;
+    border:none;
+    /* background-color: rgba(118, 117, 117, 0.334); */
+    background-color: (181 181 181 / 33%);
+    backdrop-filter: blur(50px);
+      box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.338);
+    color:rgb(255, 255, 255);
+    
+    display: flex;
+        
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-evenly;
+}
+
+.details{
+    
+    display: flex;
+    flex-direction: column;
+    width: 84%;
+
+font-family:Arial, Helvetica, sans-serif;
+font-size:16px;
+gap:7px;
+}
+
+.btn .rmv{
+    width: 107%;
+  padding: 10px;
+  border: none;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.81);
+  backdrop-filter: blur(5px);
+  color: #c44545f1;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;  
+}
+.btn .edit{
+    width: 107%;
+  padding: 10px;
+  border: none;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.803);
+  backdrop-filter: blur(5px);
+  color: #1d1d1dcd;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+.btn{
+    display: flex;
+    flex-direction: column;
+     width: 300px;
+     margin-right: 20px;
+}
+
+
+.details label {
+    margin: 0px;
+    gap:0px;
+    padding: 7px;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 10px;
+    color: rgba(255, 255, 255, 0.907);
+    text-shadow: 0px 0px 10px rgba(0, 0, 0, 0.837);
+    font-weight: 550;
+    overflow: hidden;
+    white-space: nowrap; 
+    text-overflow: ellipsis; 
+}
+
+.details label span {
+    flex-shrink: 0; /* Prevents the labels from shrinking */
+    min-width: 80px; /* Minimum width for labels to align */
+    color: #ffffff;
+    text-shadow: 0px 0px 10px rgba(0, 0, 0, 0.43);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}

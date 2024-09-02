@@ -1,0 +1,24 @@
+.dropzone{
+    
+
+    /* width: 300px;
+    background-color: rgba(250, 235, 215, 0.577); */
+}
+
+.abc{
+    min-width: 200px;
+    /* border: 1px solid black; */
+    
+    border-radius: 5px;
+    background-color: rgba(183, 183, 183, 0.419);
+    backdrop-filter: blur(5px);     
+
+}
+.abc:hover{
+    border: 1px solid rgb(68, 68, 68);
+    /* box-shadow: 0px 0px 4px rgba(255, 255, 255, 0.207); */
+    transform: scale(1.02);
+    /* transition:.7s ease-in-out; */
+    transition-timing-function: ease-in-out;
+
+}

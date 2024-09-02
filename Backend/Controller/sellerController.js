@@ -3,6 +3,7 @@ const { registermodel, productTable} = require("../dbConnection/db");
 const jwt = require('jsonwebtoken');
 // const nodemailer = require('nodemailer')
 require('dotenv').config();
+const multer = require('multer')
 
 
 const checkToken= async (dt)=>{
@@ -119,5 +120,54 @@ const getProductData = async (req,res)=>{
   }
 }
 
+const edituser = async (req,res) => {
+  try {
+    const {data} = req.body;
+    if(!data){
+      return res.json({success:false,msg:"Data not Found a3"});
+    }
+    const tokenData =await checkToken(data)
+    if(!tokenData._id){
+      return res.json({success:false,msg:"Authorization failure !"})
+    }else{
+     
+    const dataUpdate = await registermodel.findByIdAndUpdate(tokenData._id,{name:data.name , contact:data.contact},{new:true})
+    if(dataUpdate){
+    
+      return res.json({success:true,msg:'User Details Changed Successfully',tokenData})
+    }else{
+    
+      return res.json({success:false,msg:'Error in update details' })
+    }
+    
+    } 
+      } catch (error) {
+        console.log(error)
+        return res.json({success:false , msg:'server Error Occured'})
+      }
+}
 
-module.exports = {getSellerData,logout,removeAccount,getProductData };
+function multerErrorHandler(err, req, res, next) {
+  console.log(req.file)
+  if (err instanceof multer.MulterError) {
+    if (err.code === 'LIMIT_FILE_SIZE') {
+      return res.json({ success: false, msg: 'Image size not exceed more then 5 MB' });
+    }
+  } else if (err) {
+    return res.json({ success: false, msg: err.message });
+  }
+  next();
+}
+
+const addProduct = (req,res) => {
+    try {
+      console.log(req.file)
+      
+    } catch (error) {
+      console.log(error)
+      res.json({success:false,msg:"Server Error occured !"})
+    }
+}
+
+
+module.exports = {getSellerData,logout,removeAccount,getProductData,edituser,addProduct,multerErrorHandler };

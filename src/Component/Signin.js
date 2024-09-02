@@ -40,7 +40,7 @@ const Signin = () => {
   const validEmail = new RegExp(
     "^[a-zA-Z0-9._:$!%-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"
   );
-  const validPassword = new RegExp("^(?=.*?[A-Za-z0-1]).{6,20}$");
+  const validPassword = new RegExp("^(?=.*?[A-Za-z0-9]).{6,20}$");
   const validContact = new RegExp("^[0-9]{10,12}$");
 
   const handlesubmit = () => {

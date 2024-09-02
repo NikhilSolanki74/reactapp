@@ -141,6 +141,8 @@ const getRegisteredUser =async (req ,res) =>{
 
 
 const getChart =async (req,res) => {
+  
+  // console.log('value',req.body);
   try {
     const token = req.body;
   const chk =await checkToken(token);
@@ -183,7 +185,7 @@ return res.json({success:false, msg:'Invalid User !'})
     {
             $count:'activeUser'
    }
-        ])
+        ]) || [{avtiveUser:0}]
 
 
 const today = new Date();
@@ -209,11 +211,13 @@ const endmonth = Math.floor(lastDayOfMonth.getTime() / 1000);
           {
                   $count:'Mactive'
          }
-              ])
+              ]) || [{ Mactive: 0 }];
 //  console.log(activeUser);
 
+   const a = activeUser.length === 0 ? [{activeUser:0}] : activeUser ;
+   const b = Mactive.length === 0 ? [{Mactive:0}] : Mactive ;
 
- return res.json({success:true ,countrydata , total,activeUser,Mactive})
+ return res.json({success:true ,countrydata , total,activeUser:a,Mactive:b})
     
   } catch (error) {
     console.log(error);
@@ -290,7 +294,7 @@ return res.json({success:false, msg:'Invalid User !'})
        count=0;
   })
     
-  // console.log(avg)
+  console.log(avg)
   let totalTime =0;
    for(let i=0; i<avg.length ; i++){
       totalTime += avg[i];

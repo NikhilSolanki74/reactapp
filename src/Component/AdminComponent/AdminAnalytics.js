@@ -30,8 +30,8 @@ const AdminAnalytics = () => {
               return triggerNotification('Error in chart data','error')
  
              }
-              // console.log(data);
-              if(!data.activeUser[0]){
+              console.log(data);
+              if(data.activeUser.length === 0){
                 return triggerNotification('Failed in data fetch','error')
               }
               setTimeout(()=>{
@@ -46,12 +46,12 @@ const AdminAnalytics = () => {
               return triggerNotification('Error in engagement time data','error')
  
              }
-            if(!data.minute && !data.second){
-              return triggerNotification('Error in fetching chart data','error')
-             }
+            // if(data.minute >= 0 || !data.second){
+            //   return triggerNotification('Error in fetching chart data','error')
+            //  }
             // console.log(data,'hhhh')
             setTimeout(()=>{
-                  setTextFeild((dt)=>{return {...dt, engMin:data.minute, engSec:data.second,engHour:data.hour}})
+                  setTextFeild((dt)=>{return {...dt, engMin:data.minute || 0, engSec:data.second || 0,engHour:data.hour||0}})
             },1000)
               })
           });

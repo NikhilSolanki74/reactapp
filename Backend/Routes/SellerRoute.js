@@ -1,7 +1,11 @@
 const express = require('express')
 const router = express.Router()
+const upload = require('../Controller/Uploader');
 
-const { getSellerData, logout, removeAccount,getProductData} = require('../Controller/sellerController')
+
+
+
+const { getSellerData, logout, removeAccount,getProductData, edituser,addProduct,multerErrorHandler} = require('../Controller/sellerController');
 
 router.post('/getsellerdata',getSellerData);
 
@@ -11,4 +15,8 @@ router.post("/removeAccount", removeAccount);
 
 router.post("/getproductdata", getProductData);
 
-module.exports = router
+router.post("/edit",edituser);
+
+router.post('/addproduct',upload.array('image',5),multerErrorHandler ,addProduct)
+
+module.exports = router;
