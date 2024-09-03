@@ -22,6 +22,9 @@ import SellerEdit from "./Component/SellerComponent/SellerEdit";
 import SellerProfile from "./Component/SellerComponent/SellerProfile";
 import AddProduct from "./Component/SellerComponent/AddProduct";
 import SellerProduct from "./Component/SellerComponent/SellerProduct";
+import ProductView from "./Component/SellerComponent/ProductView";
+// import Loading from "./Component/Loading";
+import NotFound from "./Component/NotFound";
 
 function App() {
   return (
@@ -145,9 +148,18 @@ function App() {
             </ProtectedSellerRoute>
           }
         />
+        <Route
+          path="/productview"
+          element={
+            <ProtectedSellerRoute>
+              <ProductView/>
+            </ProtectedSellerRoute>
+          }
+        />
+        <Route path="*" element={<NotFound/>} />
       </Routes>
     </Router>
   );
 }
 
-export default App;
+export default App; 

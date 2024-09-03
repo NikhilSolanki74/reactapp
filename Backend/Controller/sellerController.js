@@ -149,7 +149,7 @@ const edituser = async (req,res) => {
 }
 
 function multerErrorHandler(err, req, res, next) {
-  console.log(req.file)
+  // console.log(req.file)
   if (err instanceof multer.MulterError) {
     if (err.code === 'LIMIT_FILE_SIZE') {
       return res.json({ success: false, msg: 'Image size not exceed more then 5 MB' });
@@ -216,5 +216,95 @@ const addProduct =async (req,res) => {
     }
 }
 
+const myProduct =async (req,res)=>{
+ try {
+      //  const {token} = req.body;
+      //  console.log(req.body)
+     const chktoken =await checkToken(req.body);
+   if(!chktoken._id){
+    return res.json({success:false,msg:"User Not Verified !"})
+   }
+    
+   const dt = await productTable.find({sellerId:chktoken._id});
+  
+   if(!dt){
+    return res.json({success:false,msg:"Data Not Found"})
+   }
 
-module.exports = {getSellerData,logout,removeAccount,getProductData,edituser,addProduct,multerErrorHandler };
+return res.json({success:true,msg:"Data Fetch Successfully",data:dt})
+
+  
+ } catch (error) {
+  console.log(error);
+  res.json({success:false,msg:"server error occured"})
+ }
+}
+
+const changeOnMarket =async (req,res) => {
+     try {
+      const chktoken =await checkToken(req.body);
+      if(!chktoken._id){
+       return res.json({success:false,msg:"User Not Verified !"})
+      }
+        const {id } = req.body;
+         await productTable.findByIdAndUpdate(id ,{ $bit: { onMarket: { xor: 1 } } }).catch((err)=>{
+    console.log(err);
+    return res.json({success:false,msg:"Failed to change !"})
+         })
+
+    return res.json({success:true, msg:'Change Successfully'})  
+     } catch (error) {
+      console.log(error);
+     return  res.json({success:false , msg:"Failed in change !"})
+     }
+}
+
+const removeProduct = async (req,res) =>{
+  try {
+    const chktoken =await checkToken(req.body);
+    if(!chktoken._id){
+     return res.json({success:false,msg:"User Not Verified !"})
+    }
+      const {id } = req.body;
+
+      await productTable.findByIdAndDelete(id).catch((err)=>{
+        console.log(err)
+     return  res.json({success:false , msg:"Failed in Delete !"})
+      })
+      res.json({success:true, msg:"Product Removed Successfully"})
+    
+  } catch (error) {
+    console.log(error);
+   return  res.json({success:false , msg:"Failed in Delete !"})
+   }
+}
+
+const getProductDetail = async (req,res) => {
+  try {
+    const chktoken =await checkToken(req.body);
+    if(!chktoken._id){
+     return res.json({success:false,msg:"User Not Verified !"})
+    }
+      const {id } = req.body;
+       if(id === ''){
+     return res.json({success:false,msg:"Failed to fetch data !"})
+       }
+      const data = await productTable.findOne({_id:id}).catch((err)=>{
+        console.log(err)
+     return  res.json({success:false , msg:"Failed in fetch product !"})
+      })
+
+      res.json({success:true, msg:"Product Fetch Successfully",data})
+    
+  } catch (error) {
+    console.log(error);
+   return  res.json({success:false , msg:"Failed in fetch product Detail !"})
+   }
+
+
+
+}
+
+
+
+module.exports = {getSellerData,logout,removeAccount,getProductData,edituser,addProduct,multerErrorHandler,myProduct ,changeOnMarket,removeProduct,getProductDetail};

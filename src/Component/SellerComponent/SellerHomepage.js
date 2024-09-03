@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import styles from '../CSS/SellerCSS/SellerHomepage.module.css';
-// import {useSelector} from "react-redux";
-import { useNavigate } from 'react-router-dom';
 import SellerNavbar from './SellerNavbar';
 import axios from 'axios';
 import ProductCard from '../../ProductCard';

@@ -294,7 +294,7 @@ return res.json({success:false, msg:'Invalid User !'})
        count=0;
   })
     
-  console.log(avg)
+  // console.log(avg)
   let totalTime =0;
    for(let i=0; i<avg.length ; i++){
       totalTime += avg[i];

@@ -34,18 +34,22 @@ const AddProduct = () => {
   const baseurl = process.env.REACT_APP_SELLER_BASE_URL || '';
   const token = localStorage.getItem('token') || '';
   const number = new RegExp("^[0-9]+$")
-  const product = new RegExp("^[0-9A-Za-z ]+$")
+  const product = new RegExp(`^[\\$#@^&*(){}\\[\\]:;'<>,./?+=\\-_\\|~0-9A-Za-z ]+$`);
+
   const name = new RegExp("^[A-Za-z ]+$")
 
   const handleSubmit =async () =>{
     setCheck(true);
-    if(!number.test(data.price) || !number.test(data.stock) || !product.test(data.product) || !name.test(data.sellerName) || !product.test(data.description)){
+    if(!number.test(data.price) || !number.test(data.stock) ||  !name.test(data.sellerName)){
+      setCheck(false)
       return triggerNotification('Invalid Input Details !','error')
     }
     if(image.length === 0){
+      setCheck(false)
      return triggerNotification("Minimum 1 Image Required",'info')
     }
     if(image.length > 5){
+      setCheck(false)
       return triggerNotification("Maximum Image image limit is 5",'info')
      }
        const formData = new FormData();
@@ -63,10 +67,13 @@ const AddProduct = () => {
       console.log(response.data)
       const dat = response.data;
       if(dat.success){
+        setCheck(false)
        return triggerNotification(dat.msg)
       }
+      setCheck(false)
         return   triggerNotification(dat.msg,"error")
     }).catch((err)=>{
+      setCheck(false)
 console.log(err)
    triggerNotification('Images Size are too large','error')
     }).finally(()=> setCheck(false))

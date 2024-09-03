@@ -2,9 +2,11 @@ import React from 'react';
 import styles from './Component/CSS/ProductCard.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCartShopping } from '@fortawesome/free-solid-svg-icons';
+import { useNavigate } from 'react-router-dom';
 const ProductCard = ({ product }) => {
+   const navigate = useNavigate();
   return (
-    <div className={styles.card}>
+    <div className={styles.card} onClick={()=>{if(product._id){navigate(`/productview/?id=${encodeURIComponent(product._id)}`)}}}>
     <div className={styles.icondiv}>
     <FontAwesomeIcon className={styles.icon} icon={faCartShopping} />
     </div>
@@ -12,7 +14,7 @@ const ProductCard = ({ product }) => {
       <div className={styles.details}>
         <h2 className={styles.title}>{product.product}</h2>
         <p>{product.description}</p>
-        <h4>Price: {product.price} RS</h4>
+        <h4>{product.price ? `Price: ${product.price} Rs` : ' '}</h4>
       </div>
     </div>
   );

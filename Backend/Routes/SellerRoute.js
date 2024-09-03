@@ -2,7 +2,7 @@ const express = require('express')
 const router = express.Router()
 const upload = require('../Controller/Uploader');
 
-const { getSellerData, logout, removeAccount,getProductData, edituser,addProduct,multerErrorHandler} = require('../Controller/sellerController');
+const { getSellerData, logout, removeAccount,getProductData, edituser,addProduct,multerErrorHandler,myProduct, changeOnMarket , removeProduct,getProductDetail} = require('../Controller/sellerController');
 
 router.post('/getsellerdata',getSellerData);
 
@@ -16,4 +16,12 @@ router.post("/edit",edituser);
 
 router.post('/addproduct',upload.array('image',5),multerErrorHandler ,addProduct)
 
-module.exports = router;
+router.post('/myproduct',myProduct);
+
+router.post("/changeonmarket" , changeOnMarket)
+
+router.post("/removeproduct" , removeProduct)
+
+router.post("/getproductdetail" , getProductDetail)
+
+module.exports = router; 
