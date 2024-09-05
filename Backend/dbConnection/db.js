@@ -48,6 +48,18 @@ const selleractivity = mongoose.model("selleractivity", model4);
 
 
 
+const model5 = new mongoose.Schema({
+  userId:{type:String,required:true},
+  itemCount:{type:Number,required:true},
+  itemsId:{type:Object,default:{}},
+})
+const userCart = mongoose.model("userCart",model5)
+
+
+
+
+
+
 const db = async () => {
   await mongoose.connect(process.env.MONGO_URL)
     .then(() => {
@@ -58,4 +70,4 @@ const db = async () => {
     });
 };
 
-module.exports = {  db ,registermodel,useractivity,productTable , selleractivity};
+module.exports = {  db ,registermodel,useractivity,productTable , selleractivity,userCart};

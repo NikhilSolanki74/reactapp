@@ -23,8 +23,9 @@ import SellerProfile from "./Component/SellerComponent/SellerProfile";
 import AddProduct from "./Component/SellerComponent/AddProduct";
 import SellerProduct from "./Component/SellerComponent/SellerProduct";
 import ProductView from "./Component/SellerComponent/ProductView";
-// import Loading from "./Component/Loading";
+import ProductViewu from "./Component/ProductViewu";
 import NotFound from "./Component/NotFound";
+import AddToCart from "./Component/AddToCart";
 
 function App() {
   return (
@@ -41,7 +42,7 @@ function App() {
           path="/home"
           element={
             <ProtectedRoute>
-              <Homepage />
+              <Homepage/>
             </ProtectedRoute>
           }
         />
@@ -58,6 +59,23 @@ function App() {
           element={
             <ProtectedRoute>
               <Edit />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/productviewu"
+          element={
+            <ProtectedRoute>
+              <ProductViewu/>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/addtocart"
+          element={
+            <ProtectedRoute>
+              <AddToCart/>
             </ProtectedRoute>
           }
         />

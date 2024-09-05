@@ -3,6 +3,7 @@ import axios from 'axios'
 import {useDispatch,useSelector} from 'react-redux'
 import { Navigate,useNavigate } from 'react-router-dom'
 import { setUser } from './Redux/Features/UserSlice'
+import { setCart } from './Redux/Features/UserCartSlice'
 import Loading from './Component/Loading'
 
 const ProtectedRoute = ({children}) => {
@@ -10,6 +11,7 @@ const ProtectedRoute = ({children}) => {
   const baseurl = process.env.REACT_APP_BASE_URL || '';
   const dispatch = useDispatch();
   const {user} = useSelector(state => state.user)
+  const {cart} = useSelector(state => state.cart)
 const [check ,setCheck] = useState(false)
   const getuserdata = async () =>{
        try {
@@ -18,6 +20,9 @@ const [check ,setCheck] = useState(false)
            const data = response.data;
            if(data.success && data.data.status  === '0'){
               dispatch(setUser(data.data))
+              const dt = data.cart;
+              dispatch(setCart({userId:dt.userId,itemsId:dt.itemsId,itemCount:dt.itemCount}))
+              
             //   setCheck(true);
            }else{
                localStorage.clear()
@@ -39,7 +44,7 @@ const [check ,setCheck] = useState(false)
   }
  
   useEffect(()=>{
-   if(!user){
+   if(!user || !cart){
     getuserdata();
   }else if(user.status === '0'){
     setCheck(true)

@@ -1,8 +1,12 @@
-const { registermodel, useractivity } = require("../dbConnection/db");
+const { registermodel, useractivity,productTable,userCart } = require("../dbConnection/db");
 const bcrypt = require("bcrypt");
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer')
 require('dotenv').config();
+// const Razorpay = require("razorpay");
+const bodyParser = require("body-parser");
+const Stripe = require('stripe');
+
 
 
 const addEvent = async (id , action)=> {
@@ -84,6 +88,14 @@ const Signin = async (req, res) => {
                 msg: "something wrong happen ,data not saved",
               });
             });
+
+            if(status === '0'){
+            const cart = new userCart({
+              userId:userdetail._id,
+              itemCount:0
+            });
+            await cart.save();
+          }
            addEvent(userdetail._id , 'New Register');
             // console.log(ddd)
            const token = jwt.sign({data:userdetail._id} ,process.env.JWT_SECRET,{expiresIn:'1d'} );
@@ -158,6 +170,7 @@ const Login = async (req, res) => {
 
 const getUserData = async (req,res)=>{
    try {
+    let cart2 = {};
     const {token} = req.body
     if(!token){
 return res.json({success:false,msg:'data not found'})
@@ -168,9 +181,18 @@ return res.json({success:false,msg:'Authentication Error !'})
       }
       const id = decode.data;
       const data = await registermodel.findOne({_id:id},'name email contact status')
+      cart2 = await userCart.findOne({userId:id});
+      if(!cart2){
+        const cartdata = new userCart({
+          userId:id,
+          itemCount:0
+        });
+        await cartdata.save();
+         cart2 = cartdata;
+      }
       if(data){
         await addEvent(id,'Page Refreshed');
-         return res.json({success:true,data:data})
+         return res.json({success:true,data:data,cart:cart2})
       }else{
         return res.json({success:false,msg:"data not found"})
       }
@@ -486,5 +508,287 @@ const logout= async (req,res) => {
    
 }
 
+const getProductData =async (req,res) =>{
+  try {
 
-module.exports = { Signin, Login,getUserData,resetPassword ,getOTP,changePassword,removeAccount,edituser,logout};
+    const data = req.body;
+    if(!data){
+    return res.json({success:false , msg:'User Not Verified'})
+    }
+  
+   const verify = await checkToken(data)
+  
+  if(!verify){
+    return res.json({success:false , msg:'User Not Verified'})
+  }
+
+    
+    const limit = data.limit || 12;
+    const offset = data.offset || 0;
+
+
+  const productdata = await productTable.find({onMarket:'1'}).limit(limit).skip(offset)
+  const count  = await productTable.countDocuments({onMarket:{$eq:'1'}})
+  // const pages = Math.ceil(count/limit)
+  const more = offset+limit >= count ? false : true;
+  // console.log(count, 'hellll')
+   if(productdata){
+     return res.json({success:true , msg:"data fetched Successfully",productdata ,count,more })
+
+   }else{
+    return res.json({success:false , msg:'Data Not Found !'})
+
+   }
+
+  } catch (error) {
+    console.log(error)
+  return  res.json({success:false, msg:"Error in Fetching Data"})
+  }
+}
+
+
+const getProductDetail = async (req,res) => {
+  try {
+    const chktoken =await checkToken(req.body);
+    if(!chktoken._id){
+     return res.json({success:false,msg:"User Not Verified !"})
+    }
+      const {id } = req.body;
+       if(id === ''){
+     return res.json({success:false,msg:"Failed to fetch data !"})
+       }
+      const data = await productTable.findOne({_id:id}).catch((err)=>{
+        console.log(err)
+     return  res.json({success:false , msg:"Failed in fetch product !"})
+      })
+
+      res.json({success:true, msg:"Product Fetch Successfully",data})
+    
+  } catch (error) {
+    console.log(error);
+   return  res.json({success:false , msg:"Failed in fetch product Detail !"})
+   }
+
+
+
+}
+
+
+const addToCart =async (req,res) => {
+  try {
+    const chktoken =await checkToken(req.body);
+    if(!chktoken._id){
+     return res.json({success:false,msg:"User Not Verified !"})
+    }
+      const {id } = req.body;
+       if(id === ''){
+     return res.json({success:false,msg:"Failed to change !"})
+       }
+
+       const df = await userCart.findOne({userId:chktoken._id},'itemsId itemCount');
+       if(df.itemsId[id] >=10){
+   return res.json({success:true, msg:"Item Added To Cart",data:df})
+       }
+
+      const data = await userCart.updateOne({userId:chktoken._id},
+       {
+        
+        $inc:{
+          [`itemsId.${id}`]:1
+        }
+       }      
+     ,{new:true} )
+      .catch((err)=>{
+        console.log(err)
+     return  res.json({success:false , msg:"Failed in change !",data})
+      })
+
+      const dd = await userCart.findOne({userId:chktoken._id});
+      const itc = Object.values(dd.itemsId).length;
+
+    const fd =  await userCart.updateOne(
+        { userId: chktoken._id },
+        { $set: { itemCount: itc } }).catch((err)=>{
+          console.log(err)
+       return  res.json({success:false , msg:"Failed in change !",data})
+        })
+      const fdc = await userCart.findOne({userId:chktoken._id},'itemsId itemCount');
+
+         
+      res.json({success:true, msg:"Item Added To Cart",data:fdc})
+    
+  } catch (error) {
+    console.log(error);
+   return  res.json({success:false , msg:"Failed in change Detail !"})
+   }
+}
+
+const myCart = async (req,res) =>{
+  try {
+    const chktoken =await checkToken(req.body);
+    if(!chktoken._id){
+     return res.json({success:false,msg:"User Not Verified !"})
+    }
+      const {id } = req.body;
+       if(id === ''){
+     return res.json({success:false,msg:"Failed to fetch data !"})
+       }
+        const idArray = await userCart.findOne({userId:chktoken._id},'itemsId').catch((err)=>{
+           console.log(err);
+          return res.json({success:false,msg:"Server Error Occured !"})
+        })
+        if(idArray.itemsId.length >0){
+          return res.json({success:false,msg:"No Item Added In Cart Yet"})
+        }
+
+       const array =  Object.keys(idArray.itemsId)
+        const pdata = await productTable.find({_id:{$in:array}},'SellerId product image price')
+        // console.log(pdata);
+    //   const data = await productTable.findOne({_id:id}).catch((err)=>{
+    //     console.log(err)
+    //  return  res.json({success:false , msg:"Failed in fetch product !"})
+    //   })
+
+      res.json({success:true, msg:"Product Fetch Successfully",data:pdata})
+    
+  } catch (error) {
+    console.log(error);
+   return  res.json({success:false , msg:"Failed in fetch product Detail !"})
+   }
+}
+
+
+const decreaseCartItem = async (req,res) =>{
+  try {
+    const chktoken =await checkToken(req.body);
+    if(!chktoken._id){
+     return res.json({success:false,msg:"User Not Verified !"})
+    }
+      const {id } = req.body;
+       if(id === ''){
+     return res.json({success:false,msg:"Failed to change !"})
+       }
+         
+       const dd = await userCart.findOne({userId:chktoken._id},'itemsId itemCount');
+           if(dd.itemsId[id] <=1){
+       return res.json({success:true, msg:"Item Added To Cart",data:dd})
+           }
+
+      const data = await userCart.updateOne({userId:chktoken._id},
+       {
+        
+        $inc:{
+          [`itemsId.${id}`]:-1
+        }
+       }      
+     ,{new:true} )
+      .catch((err)=>{
+        console.log(err)
+     return  res.json({success:false , msg:"Failed in change !",data})
+      })
+
+    
+      const fdc = await userCart.findOne({userId:chktoken._id},'itemsId itemCount');
+
+         
+      res.json({success:true, msg:"Item Added To Cart",data:fdc})
+    
+  } catch (error) {
+    console.log(error);
+   return  res.json({success:false , msg:"Failed in change Detail !"})
+   }
+}
+
+const removeCartItem = async (req,res) => {
+  try {
+    const chktoken =await checkToken(req.body);
+    if(!chktoken._id){
+     return res.json({success:false,msg:"User Not Verified !"})
+    }
+      const {id } = req.body;
+       if(id === ''){
+     return res.json({success:false,msg:"Failed to change !"})
+       }
+         
+       const dd = await userCart.findOne({userId:chktoken._id},'itemsId itemCount');
+           
+
+      const data = await userCart.updateOne({userId:chktoken._id},
+       {$inc:{
+        itemCount:-1
+       }
+        ,
+        $unset:{
+          [`itemsId.${id}`]:dd.itemsId[id]
+        }
+       }      
+     ,{new:true} )
+      .catch((err)=>{
+        console.log(err)
+     return  res.json({success:false , msg:"Failed in change !",data})
+      })
+
+    
+      const fdc = await userCart.findOne({userId:chktoken._id},'itemsId itemCount');
+      
+         
+      res.json({success:true, msg:"Item Added To Cart",data:fdc})
+    
+  } catch (error) {
+    console.log(error);
+   return  res.json({success:false , msg:"Failed in change Detail !"})
+   }
+
+}
+
+const createOrder = async (req,res) =>{
+
+    const chktoken =await checkToken(req.body);
+    if(!chktoken._id){
+     return res.json({success:false,msg:"User Not Verified !"})
+    }
+
+  const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
+  const { amount, currency ,productname} = req.body;
+
+  try {
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ['card'], 
+      line_items: [
+        {
+          price_data: {
+            currency: currency,
+            product_data: {
+              name: productname, 
+            },
+            unit_amount: amount,
+          },
+          quantity: 1,
+        },
+      ],
+      mode: 'payment',
+      success_url: process.env.SUCCESS_URL, 
+      cancel_url: process.env.CANCEL_URL 
+    });
+
+    res.json({ success:true,id: session.id });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+}
+
+module.exports = { Signin, Login,getUserData,resetPassword ,getOTP,changePassword,removeAccount,edituser,logout,getProductData,getProductDetail,addToCart, myCart,decreaseCartItem,removeCartItem,createOrder};
