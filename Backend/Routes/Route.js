@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router()
 
-const { Signin,Login, getUserData,resetPassword,getOTP,changePassword, removeAccount, edituser,logout, getProductData ,getProductDetail,addToCart,myCart , removeCartItem ,decreaseCartItem,createOrder} = require('../Controller/userController')
+const { Signin,Login, getUserData,resetPassword,getOTP,changePassword, removeAccount, edituser,logout, getProductData ,getProductDetail,addToCart,myCart , removeCartItem ,decreaseCartItem,createOrder,clearCart, paymentSuccess} = require('../Controller/userController')
 
 router.post('/login',Login)
     
@@ -34,5 +34,9 @@ router.post('/removecartitem',removeCartItem)
 router.post('/decreaseitemcount',decreaseCartItem)
 
 router.post('/create-order',createOrder)
+
+router.post('/clearcart', clearCart)
+
+router.post('/paymentsuccess', paymentSuccess)
 
 module.exports = router

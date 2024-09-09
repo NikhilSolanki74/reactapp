@@ -145,7 +145,7 @@
     margin-bottom: 15px;
     height: 200px;
     width: 100%;
-    overflow-y: scroll;
+    overflow-y: auto;
 }
 
 .priceStock {
@@ -172,6 +172,7 @@
     margin-bottom: 15px;
 }
 
+
 .sellerName, .sellerId {
     font-size: 1rem;
     color: #555;
@@ -183,7 +184,7 @@
     font-weight: bold;
 }
 
-.btn {
+.atc{
     background-color: #ffffff;
     color: #000000;
     border: none;
@@ -191,12 +192,36 @@
     padding: 10px 20px;
     font-size: 16px;
     cursor: pointer;
-    width: 60%;
+    width: 30%;
+    height: 100%;
     /* margin-top: 20px; */
-    box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.204);
+    box-shadow: 0px 0px 7px rgba(0, 0, 0, 0.204);
+    border: 1px solid rgb(185, 185, 185);
+
+}
+.btn {
+
+    background-color: #ffffff;
+    color: #000000;
+    border: 1px solid rgb(180, 180, 180);
+    height: 100%;
+    border-radius: 20px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    width: 30%;
+    /* margin-top: 20px; */
+    box-shadow: 0px 0px 7px rgba(0, 0, 0, 0.204);
   }
 
   .btn:hover{
+    color: rgb(64, 64, 64);
+    background-color: rgb(244, 244, 244);
+    box-shadow: 0px 0px 20px rgba(255, 255, 255, 0.204);
+
+  }
+
+  .atc:hover{
     color: rgb(64, 64, 64);
     background-color: rgb(244, 244, 244);
     box-shadow: 0px 0px 20px rgba(255, 255, 255, 0.204);

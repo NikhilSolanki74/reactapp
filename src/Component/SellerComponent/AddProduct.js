@@ -10,6 +10,8 @@ import { faUser ,faDiceD6,faTag,faCircleInfo,faBoxesStacked} from '@fortawesome/
 import { triggerNotification } from '../Notification'
 import axios from 'axios'
 import ProductCard from '../../ProductCard'
+import Loader from '../Loader'
+import { height } from '@fortawesome/free-solid-svg-icons/fa0'
 const AddProduct = () => {
   const [check ,setCheck]  = useState(false);
   const [data, setData] = useState({product:'', price:'', description:'',stock:'',sellerName:''})
@@ -21,8 +23,8 @@ const AddProduct = () => {
      setImage((e)=> { return [...e,file]})
   }
  useEffect(()=>{
-    if( image.length >5){
-      triggerNotification("your Image limit is More than 5","error")
+    if( image.length >8){
+      triggerNotification("your Image limit is More than 8","error")
     }
     handlepreview();
  },[image])
@@ -48,9 +50,9 @@ const AddProduct = () => {
       setCheck(false)
      return triggerNotification("Minimum 1 Image Required",'info')
     }
-    if(image.length > 5){
+    if(image.length > 8){
       setCheck(false)
-      return triggerNotification("Maximum Image image limit is 5",'info')
+      return triggerNotification("Maximum Image image limit is 8",'info')
      }
        const formData = new FormData();
        formData.append('product', data.product);
@@ -157,6 +159,7 @@ const handlepreview =async () =>{
             required
           />
         </div>
+        
         <button type="button" onClick={handleSubmit} className={styles.submitButtons} disabled={check}>
         Upload Product
         </button>
@@ -165,8 +168,9 @@ const handlepreview =async () =>{
         <div className={styles.productlist}>
             <div className={styles.previewheading}><h2>Product Preview</h2></div>
             <div  className={styles.preview}>
+          {check ? <Loader style={{height:'10px',width:'10px'  }}  /> : <ProductCard key={'abc'} product={{...data,'image':img}}/>}
                   
-               <ProductCard key={'abc'} product={{...data,'image':img}}/>
+               
 
 
             </div>

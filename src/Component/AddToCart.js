@@ -2,13 +2,13 @@ import React, { useEffect, useState } from 'react'
 import styles from './CSS/AddToCart.module.css'
 import Navbar from './Navbar'
 import { setLine } from '../Redux/Features/UnderlineSlice'
-import { setCart } from '../Redux/Features/UserCartSlice'
+import { setCart ,reset} from '../Redux/Features/UserCartSlice'
 import { useDispatch } from 'react-redux'
 import { triggerNotification } from './Notification'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
-import { loadStripe } from '@stripe/stripe-js';
+// import { loadStripe } from '@stripe/stripe-js';
 const AddToCart = () => {
     const {cart} = useSelector((state)=> state.cart);
     const navigate = useNavigate();
@@ -19,11 +19,11 @@ const AddToCart = () => {
   const [products, setProducts] = useState([]);
 const dispatch  = useDispatch();
 const [count , setCount] = useState(cart.itemCount)
-const stripePromise = loadStripe('pk_test_51PWWfj00wn2FeaExlr7ew2lFyeeBRIZJwxQNIwZihmeYvq9kPEIOcsE8kkUceQt0mu1YF207fBjtdmyOBrEbKYeQ00PeQoCgB1');
+// const stripePromise = loadStripe('pk_test_51PWWfj00wn2FeaExlr7ew2lFyeeBRIZJwxQNIwZihmeYvq9kPEIOcsE8kkUceQt0mu1YF207fBjtdmyOBrEbKYeQ00PeQoCgB1');
 
 
     useEffect(()=>{
-        dispatch(setLine(2))
+        dispatch(setLine(0))
        axios.post(`${baseurl}/mycart`,{token:token}).then((response)=>{
         const data = response.data;
          // console.log(data)
@@ -121,50 +121,89 @@ console.log(err);
    }
  },[ids , products , count])
 
+ const loadRazorpayScript = () => {
+  return new Promise((resolve) => {
+      const script = document.createElement('script');
+      script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+      script.onload = () => {
+          resolve(true);
+      };
+      script.onerror = () => {
+          resolve(false);
+      };
+      document.body.appendChild(script);
+  });
+};
+
 
   const handlePayment = async () => {
-    let productname = products[0].product;
+  
+      const isScriptLoaded = await loadRazorpayScript();
+      if (!isScriptLoaded) {
+          alert('Failed to load Razorpay script');
+          return;
+      }
+
+        try {
+           let productname = products[0].product;
     if(products.length > 1){
        productname += ` and ${products.length-1} Other`;
     }
+          const order = await axios.post(`${baseurl}/create-order`, {
+            amount: cal.total,
+            currency: 'inr',token,productname
+          });
+    
+          const options = {
+            key: 'rzp_test_PDc1ER07EFyI2H',
+            amount: order.data.amount,
+            currency: order.data.currency,
+            name: 'Julissa Limited',
+            description: 'Product Transaction',
+           
+            order_id: order.data.id, 
+            handler: function (response) {
+              
+              const data = {
+                paymentId: response.razorpay_payment_id,
+                orderId: response.razorpay_order_id,
+                signature: response.razorpay_signature,
+              };
+              axios.post(`${baseurl}/paymentsuccess`,{token:token,orderDetails:ids}).catch((err)=>{
+                  console.log(err)
+              })
+              axios.post(`${baseurl}/clearcart`,{token:token});
+              setProducts([]);
+              dispatch(reset())
+              navigate('/addtocart')
+              triggerNotification("Payment Successfull, Your Order Placed !")
+              
+            },
+            theme: {
+              color: '#3399cc',
+            },
+            modal: {
+              ondismiss: function () {
+                navigate('/home')
+                triggerNotification("Payment Unsuccessfull !", "error")
+              } 
+            }
+          };
+    
+          const rzp = new window.Razorpay(options);
+          rzp.open();
+        } catch (error) {
+          console.error(error);
+        }
+     
+    
+    
 
-    const stripe = await stripePromise;
 
-    const { data } = await axios.post(`${baseurl}/create-order`, {
-      amount: cal.total*100, 
-      currency: 'inr',token,productname
-    });
 
-    const result = await stripe.redirectToCheckout({
-      sessionId: data.id,
-    });
-
-    if (result.error) {
-      console.error(result.error.message);
-    }
   };
 
   
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
   return (

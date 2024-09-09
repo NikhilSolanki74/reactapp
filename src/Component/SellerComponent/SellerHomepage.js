@@ -6,7 +6,7 @@ import ProductCard from '../../ProductCard';
 import { triggerNotification } from '../Notification';
 import {setProduct} from '../../Redux/Features/ProductSlice';
 import {setLine} from '../../Redux/Features/UnderlineSlice'
-import { setProductData } from '../../Redux/Features/ProductDataSlice';
+import { setProductData,setTheseProductsOnly } from '../../Redux/Features/ProductDataSlice';
 import { useSelector,useDispatch } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAngleDown } from '@fortawesome/free-solid-svg-icons';
@@ -25,7 +25,8 @@ const userdata = useSelector((state)=> state.user)
 
 useEffect(()=>{
   dispatch(setLine(1));  
-  if(product.ck){
+  if(product.ck ){
+    // dispatch(setProductData([]));
     setncheck(true)
      dispatch(setProduct({ck:false}))
     axios.post(`${baseurl}/getproductdata`,{token:token,offset:product.offset,limit:product.limit}).then((response)=>{
@@ -34,7 +35,7 @@ useEffect(()=>{
           setncheck(false)
           setchk(data.more)
           dispatch(setProduct({count:data.count,offset:product.offset+product.limit,more:data.more}));
-          dispatch(setProductData(data.productdata));
+          dispatch(setTheseProductsOnly(data.productdata));
         }else{
           setncheck(false);
           triggerNotification('Data not Fetched',"error")

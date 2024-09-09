@@ -5,8 +5,10 @@ import { triggerNotification } from './Notification';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {faCircle} from '@fortawesome/free-solid-svg-icons';
-
+import { setProductData } from '../Redux/Features/ProductDataSlice';
+import { useDispatch } from 'react-redux';
 const Login = () => {
+  const dispatch = useDispatch();
   const baseurl = process.env.REACT_APP_BASE_URL || '';
   
   const navigate = useNavigate();
@@ -38,6 +40,7 @@ const handlecaps =(e)=>{
 
 const handleSubmit = async () => {
   try {
+   dispatch(setProductData([]));
     if (validEmail.test(data.email) && validPassword.test(data.password)) {
       const response = await axios.post(`${baseurl}/login`, data);
       const dat = response.data;

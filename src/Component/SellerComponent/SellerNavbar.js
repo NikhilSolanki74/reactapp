@@ -5,6 +5,7 @@ import {useSelector,useDispatch} from "react-redux";
 import { triggerNotification } from '../Notification';
 import { setUser } from '../../Redux/Features/UserSlice'
 import { reset } from '../../Redux/Features/ProductSlice';
+import { setProductData } from '../../Redux/Features/ProductDataSlice';
 import axios from 'axios';
 const SellerNavbar = () => {
   const linedata = useSelector((state)=> state.line)
@@ -30,7 +31,7 @@ const SellerNavbar = () => {
         <div className={styles.profile}>
           <img onClick={()=> navigate('/sellerprofile')} src="https://res.cloudinary.com/dzjvyptwz/image/upload/v1723353963/veeznqavduoajqkcvijo.jpg" alt="profile" />
           <label onClick={()=> navigate('/sellerprofile')}>{ name}</label>
-          <button onClick={()=>{axios.post(`${baseurl}/logout`,{id:userdata.user._id});dispatch(setUser(undefined));dispatch(reset());localStorage.clear();navigate('/');triggerNotification('Logout Successfully');}} >Log Out</button>
+          <button onClick={()=>{axios.post(`${baseurl}/logout`,{id:userdata.user._id});dispatch(setProductData([]));dispatch(setUser(undefined));dispatch(reset());localStorage.clear();navigate('/');triggerNotification('Logout Successfully');}} >Log Out</button>
          
         </div>
       </nav>

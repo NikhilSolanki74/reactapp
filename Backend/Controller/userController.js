@@ -1,11 +1,13 @@
-const { registermodel, useractivity,productTable,userCart } = require("../dbConnection/db");
+const { registermodel, useractivity,productTable,userCart,orderTable } = require("../dbConnection/db");
 const bcrypt = require("bcrypt");
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer')
 require('dotenv').config();
-// const Razorpay = require("razorpay");
+const Razorpay = require("razorpay");
 const bodyParser = require("body-parser");
-const Stripe = require('stripe');
+// const Stripe = require('stripe');
+const { ObjectId } = require('mongodb');
+// const {clients}= require('../index.js')
 
 
 
@@ -38,6 +40,7 @@ return false;
 
    const decode = jwt.verify(token , process.env.JWT_SECRET)
    const id = decode.data;
+   
    const data =await registermodel.findOne({_id:id},'name email contact')
    if(data){
       return data;
@@ -350,7 +353,7 @@ let msg = {
            <h2>Reset Your Password</h2>
            <p>Dear ${userdata.name},</p>
            <p>We received a request to reset your password. Use the following url to reset your password:</p>
-           <div class="token"><a href="${baseurl}">${baseurl}</a></div>
+           <div class="token"><a href="${baseurl}">Reset Your Password</a></div>
            <p>This URL String is valid for the next 30 minutes..</p>
            <p>Thank you,</p>
            <p>Team Julissa.</p>
@@ -459,10 +462,17 @@ return res.json({success:false, msg:'server error occured'})
 const removeAccount = async (req,res)=>{
       try {
         const id = req.body.data;
-       
+        const {token} = req.body;
+       if( !checkToken(token)){
+        return res.json({success:false,msg:'Invalid Input data'})
+       }
+
         if(!id){
           return res.json({success:false,msg:'Invalid Input data'})
         }
+        if(!ObjectId.isValid(id)){
+          return res.json({success:false,msg:'Server Error Occured!'})
+         }
         await registermodel.findByIdAndDelete(id )
           addEvent(id ,'Account Removed by user')
         return res.json({success:true,msg:'Accound Removed Successfully '}) 
@@ -542,8 +552,8 @@ const getProductData =async (req,res) =>{
 
   } catch (error) {
     console.log(error)
-  return  res.json({success:false, msg:"Error in Fetching Data"})
-  }
+  return  res.json({success:false, msg:"Error in Fetching Data"}) 
+  } 
 }
 
 
@@ -741,54 +751,139 @@ const removeCartItem = async (req,res) => {
 
 }
 
-const createOrder = async (req,res) =>{
+  const createOrder = async (req,res) =>{
 
-    const chktoken =await checkToken(req.body);
-    if(!chktoken._id){
-     return res.json({success:false,msg:"User Not Verified !"})
+      const chktoken =await checkToken(req.body);
+      if(!chktoken._id){
+      return res.json({success:false,msg:"User Not Verified !"})
+      }
+
+    const { amount, currency ,productname} = req.body;
+
+    const razorpay = new Razorpay({
+      key_id:process.env.RAZORPAY_KEY_ID,
+      key_secret:process.env.RAZORPAY_SECRET_KEY
+    })
+// console.log(process.env.RAZORPAY_SECRET_KEY,' hh ',process.env.RAZORPAY_KEY_ID)
+    const options = {
+      amount:amount*100,
+      currency:'INR',
+      receipt:"kfdjslkjdf dfk",
+      payment_capture:1
     }
 
-  const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
-  const { amount, currency ,productname} = req.body;
+    try {
+          const order = await razorpay.orders.create(options)
+        res.json({
+          success:true,
+          msg:"payment done successfully",
+          id: order.id,
+        currency: order.currency,
+        amount: order.amount,
+        })
+     
 
-  try {
-    const session = await stripe.checkout.sessions.create({
-      payment_method_types: ['card'], 
-      line_items: [
-        {
-          price_data: {
-            currency: currency,
-            product_data: {
-              name: productname, 
-            },
-            unit_amount: amount,
-          },
-          quantity: 1,
-        },
-      ],
-      mode: 'payment',
-      success_url: process.env.SUCCESS_URL, 
-      cancel_url: process.env.CANCEL_URL 
-    });
 
-    res.json({ success:true,id: session.id });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+    } catch (error) {
+      console.log(error)
+      res.json({success:false,msg:'server error occured hh'})
+    }
+
+
   }
 
+const paymentSuccess = async (req,res)=>{
+  try {
+    const otp = Math.round(Math.random()*1000000)
+    const chktoken =await checkToken(req.body);
+    if(!chktoken._id){
+    return res.json({success:false,msg:"User Not Verified !"})
+    }
+    const {clients} = req.body;
 
+    console.log('All connections: ', Object.keys(clients), 'jj');
 
+    let { orderDetails } = req.body;  
+    if (!orderDetails || Object.keys(orderDetails).length === 0) {
+        return res.json({ success: false, msg: 'Orders not found' });
+    }
 
+    const productPromises = Object.keys(orderDetails).map(async (element) => {
+        const productData = await productTable.findOne({ _id: element });
+        if (!productData) {
+            throw new Error(`Product with id ${element} not found`);
+        }
+        return {
+            price:productData.price,
+             productId:productData._id,
+            userId: productData.sellerId,
+            productName: productData.product,
+            count: orderDetails[element],
+        };
+    });
 
+    const arr = await Promise.all(productPromises);
+ let chkkk = true;
+    if (Object.keys(clients).length === 0) {
+      chkkk = false;
+    }
 
+    arr.forEach(async (element) => {
+        console.log('hhh', element);
+        const datt = new orderTable({
+           customerId:chktoken._id,
+           sellerId:element.userId,
+           productId:element.productId,
+           count:element.count,
+           price:element.price,
+           otp:otp
+        })
+        await datt.save().then((dt)=>{
+          if (clients[element.userId] && chkkk) {
+              clients[element.userId].send(JSON.stringify({
+                  type: 'ORDER_NOTIFICATION',
+                  message: `User ${chktoken.name}(${chktoken.email})  ordered ${element.count}, ${element.productName}`,
+                  orderDetails: element,
+              }));
+          }
 
+        }).catch((err)=>{
+   console.log(err);
+        })
 
+    });
 
+    return res.json({ success: true, message: "Order confirmed, processing for shipment" });
 
-
-
-
+} catch (error) {
+    console.error("Error processing payment: ", error);
+    return res.status(500).json({ success: false, message: "Error processing payment", error: error.message });
+}
 
 }
 
-module.exports = { Signin, Login,getUserData,resetPassword ,getOTP,changePassword,removeAccount,edituser,logout,getProductData,getProductDetail,addToCart, myCart,decreaseCartItem,removeCartItem,createOrder};
+
+
+  const clearCart = async (req,res) =>{
+    try {
+      const chktoken =await checkToken(req.body);
+      if(!chktoken._id){
+       return res.json({success:false,msg:"User Not Verified !"})
+      }
+      await userCart.findOneAndUpdate({userId:chktoken._id},{
+        itemCount:0,
+        itemsId:{}
+      }).then((data)=>{
+        return res.json({success:true,msg:'Cart Empty Successfully'})
+      }).catch((err)=>{
+console.log(err);
+        return res.json({success:false,msg:"Error in Remove Cart"})
+      })
+
+    } catch (error) {
+      console.log(error)
+      res.json({success:false,msg:'server Error Occured !'})
+    }
+  }
+
+module.exports = { Signin, Login,getUserData,resetPassword ,getOTP,changePassword,removeAccount,edituser,logout,getProductData,getProductDetail,addToCart, myCart,decreaseCartItem,removeCartItem,createOrder,clearCart , paymentSuccess};

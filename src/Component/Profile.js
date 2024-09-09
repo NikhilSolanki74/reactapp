@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { triggerNotification } from './Notification';
 import { setUser } from '../Redux/Features/UserSlice';
 const Profile = () => {
+  const token = localStorage.getItem('token') || '';
   const baseurl = process.env.REACT_APP_BASE_URL || '';
     const dispatch = useDispatch()
     const navigate = useNavigate()
@@ -22,7 +23,7 @@ const Profile = () => {
     }
     const id = usedata.user._id || '';
         if(id){
-            axios.post(baseurl+'/removeaccount', {data:id}).then((response)=>{
+            axios.post(baseurl+'/removeaccount', {data:id,token}).then((response)=>{
                 const data = response.data;
                 if(data.success){
                     dispatch(setUser(undefined));

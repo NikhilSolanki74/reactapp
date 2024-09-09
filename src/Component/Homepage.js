@@ -7,7 +7,7 @@ import axios from 'axios';
 import { triggerNotification } from './Notification';
 import {setProduct} from '../Redux/Features/ProductSlice';
 import {setLine} from '../Redux/Features/UnderlineSlice'
-import { setProductData } from '../Redux/Features/ProductDataSlice';
+import { setProductData,setTheseProductsOnly } from '../Redux/Features/ProductDataSlice';
 import { useSelector,useDispatch } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAngleDown } from '@fortawesome/free-solid-svg-icons';
@@ -38,7 +38,7 @@ useEffect(()=>{
          setncheck(false)
          setchk(data.more)
          dispatch(setProduct({count:data.count,offset:product.offset+product.limit,more:data.more}));
-         dispatch(setProductData(data.productdata));
+         dispatch(setTheseProductsOnly(data.productdata));
        }else{
          setncheck(false);
          triggerNotification('Data not Fetched',"error")
@@ -85,6 +85,9 @@ const loadMore = () => {
 }
 
 const handleAddCart = (id)=>{
+  dispatch(setCart({itemCount:count+1,itemsId:{...ids,[id]:1}}))
+         setCount(count+1);
+         setids({...ids,[id]:1})
      axios.post(`${baseurl}/addtocart`,{token:token, id:id}).then((response)=>{
        const data =  response.data;
        if(data.success){
@@ -99,9 +102,6 @@ const handleAddCart = (id)=>{
      }).catch((err)=>{
 console.log(err);
      })
-  // return console.log(id,'hfd')
-      // setCount(cart.itemCount+1)
-    // dispatch(setCart(cart.itemCount+1))
 }
 
 

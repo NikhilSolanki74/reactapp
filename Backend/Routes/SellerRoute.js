@@ -14,7 +14,7 @@ router.post("/getproductdata", getProductData);
 
 router.post("/edit",edituser);
 
-router.post('/addproduct',upload.array('image',5),multerErrorHandler ,addProduct)
+router.post('/addproduct',upload.array('image',8),multerErrorHandler ,addProduct)
 
 router.post('/myproduct',myProduct);
 

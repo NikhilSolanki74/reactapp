@@ -57,6 +57,17 @@ const userCart = mongoose.model("userCart",model5)
 
 
 
+const model6 = new mongoose.Schema({
+  sellerId:{type:String, required:true},
+  customerId:{type:String,required:true },
+  productId:{type:String,required:true},
+  count:{type:Number,required:true},
+  price:{type:Number,required:true},
+  otp:{type:Number,required:true}
+})
+const orderTable = mongoose.model("orderTable",model6)
+
+
 
 
 
@@ -70,4 +81,4 @@ const db = async () => {
     });
 };
 
-module.exports = {  db ,registermodel,useractivity,productTable , selleractivity,userCart};
+module.exports = {  db ,registermodel,useractivity,productTable , selleractivity,userCart,orderTable};

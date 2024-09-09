@@ -12,7 +12,7 @@ const DropzoneC = ({ onFilesAdded,onFilesRemove }) => {
     const dropzone = new Dropzone(dropzoneRef.current, {
       url: "/upload",
       autoProcessQueue: false,
-      maxFiles: 5,
+      maxFiles: 8,
       acceptedFiles: 'image/*',
       addRemoveLinks: true,
       dictRemoveFile: "Remove",
@@ -46,7 +46,7 @@ const DropzoneC = ({ onFilesAdded,onFilesRemove }) => {
     <div className={styles.abc}>
       <div ref={dropzoneRef} id="my-dropzone" className="dropzone">
         <div className="dz-message">
-          <FontAwesomeIcon size='xl' icon={faPlus} style={{color: "#ffff"}} />&nbsp;Add Images (Max Limit 5)
+          <FontAwesomeIcon size='xl' icon={faPlus} style={{color: "#ffff"}} />&nbsp;Add Images (Max Limit 8)
         </div>
       </div>
     </div>

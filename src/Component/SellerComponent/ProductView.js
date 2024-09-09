@@ -5,6 +5,7 @@ import { setLine } from '../../Redux/Features/UnderlineSlice'
 import styles  from '../CSS/SellerCSS/ProductView.module.css'
 import { useLocation } from 'react-router-dom'
 import { triggerNotification } from '../Notification'
+import Zoom from 'react-medium-image-zoom';
 import axios from 'axios'
 const ProductView = () => {
     const [hookImage ,setHookImage] = useState('');
@@ -56,7 +57,9 @@ const ProductView = () => {
            })}
          </div>
           <div className={styles.showimage}>
+          <Zoom>
            {data.image && <img className={styles.simg} src={hookImage} alt=' '/>}
+          </Zoom>
           </div>
         </div>
         <div className={styles.textdiv}>
@@ -69,7 +72,7 @@ const ProductView = () => {
                             </div>
                             <div className={styles.sellerInfo}>
                                 <span className={styles.sellerName}>Seller: {data.sellerName}</span>
-                                <button className={styles.btn}>Buy Now</button>
+                                {/* <button className={styles.btn}>Buy Now</button> */}
                             </div>
                             {/* <div className={styles.status}>
                                 <span>Status: {data.onMarket ? 'Available' : 'Not Available'}</span>

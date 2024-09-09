@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Login from "./Component/Login";
 import Signin from "./Component/Signin";
@@ -26,10 +26,21 @@ import ProductView from "./Component/SellerComponent/ProductView";
 import ProductViewu from "./Component/ProductViewu";
 import NotFound from "./Component/NotFound";
 import AddToCart from "./Component/AddToCart";
+import { WebSocketProvider } from "./WebSocketProvider";
+import { useSelector } from "react-redux";
 
 function App() {
+  const {user} = useSelector((state)=> state.user) || {};
+ const [dt , setdt] = useState('');
+ useEffect(()=>{
+  if(user){
+    setdt(user._id)
+  }
+ },[user])
+ 
   return (
     <Router>
+    <WebSocketProvider sellerId={dt}>
       <Notification />
       <Routes>
         <Route path="/" element={<Login />} />
@@ -37,7 +48,6 @@ function App() {
         <Route path="/resetpassword" element={<ResetPassword />} />
         <Route path="/forgotpassword" element={<ForgotPassword />} />
         <Route path="/changepassword" element={<ChangePassword />} />
-
         <Route
           path="/home"
           element={
@@ -176,6 +186,7 @@ function App() {
         />
         <Route path="*" element={<NotFound/>} />
       </Routes>
+      </WebSocketProvider>
     </Router>
   );
 }
