@@ -1,5 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-
+import { triggerNotification } from "./Component/Notification";
+import { setCart } from './Redux/Features/UserCartSlice';
+import { useDispatch ,useSelector} from 'react-redux';
 const WebSocketContext = createContext(null);
 
 export const useWebSocket = () => {
@@ -7,6 +9,8 @@ export const useWebSocket = () => {
 };
 
 export const WebSocketProvider = ({ sellerId, children }) => {
+    const cart = useSelector(state=> state.cart)
+    const dispatch = useDispatch();
     const [ws, setWs] = useState(null);
     const [notifications, setNotifications] = useState([]);
 
@@ -20,11 +24,12 @@ export const WebSocketProvider = ({ sellerId, children }) => {
         };
 
         socket.onmessage = (event) => {
-            // console.log(event,'hhhhhhhhhhh')
             const data = JSON.parse(event.data);
             if (data.type === 'ORDER_NOTIFICATION') {
+                triggerNotification(data.message,"info")
                 setNotifications((prev) => [...prev, data.message]);
-                console.log(data);
+                // console.log(notifications,'notify');
+                dispatch(setCart({tag:true}));
             }
         };
 

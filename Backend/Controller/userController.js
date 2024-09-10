@@ -819,6 +819,8 @@ const paymentSuccess = async (req,res)=>{
             userId: productData.sellerId,
             productName: productData.product,
             count: orderDetails[element],
+            image: productData.image,
+            productName:productData.product,
         };
     });
 
@@ -831,18 +833,20 @@ const paymentSuccess = async (req,res)=>{
     arr.forEach(async (element) => {
         console.log('hhh', element);
         const datt = new orderTable({
+           productName:element.productName,
            customerId:chktoken._id,
            sellerId:element.userId,
            productId:element.productId,
            count:element.count,
            price:element.price,
-           otp:otp
+           otp:otp,
+           productImage:element.image,
         })
         await datt.save().then((dt)=>{
           if (clients[element.userId] && chkkk) {
               clients[element.userId].send(JSON.stringify({
                   type: 'ORDER_NOTIFICATION',
-                  message: `User ${chktoken.name}(${chktoken.email})  ordered ${element.count}, ${element.productName}`,
+                  message: `User ${chktoken.name} , Ordered  ${element.productName.substring(0,10)+'...'}`,
                   orderDetails: element,
               }));
           }
@@ -886,4 +890,28 @@ console.log(err);
     }
   }
 
-module.exports = { Signin, Login,getUserData,resetPassword ,getOTP,changePassword,removeAccount,edituser,logout,getProductData,getProductDetail,addToCart, myCart,decreaseCartItem,removeCartItem,createOrder,clearCart , paymentSuccess};
+
+
+  const getOrders = async (req,res) =>{
+      try {
+        const chktoken =await checkToken(req.body);
+      if(!chktoken || !chktoken._id){
+       return res.json({success:false,msg:"User Not Verified !"})
+      }
+ 
+    const data =   await orderTable.find({customerId:chktoken._id},'productImage productName count price status productId')
+    .then((orders)=>{
+      // console.log(orders,'hhhhhkkkkkkkkk',chktoken._id)
+       return res.json({success:true , orders})
+    }).catch((err)=>{
+       console.log(err)
+      return res.json({success:false ,msg:'Error in Order Fetch !'})
+    })
+   
+      } catch (error) {
+        console.log(error);
+       return res.status(200).json({success:false,msg:"Server Error Occured !"})
+      }
+  }
+
+module.exports = { Signin, Login,getUserData,resetPassword ,getOTP,changePassword,removeAccount,edituser,logout,getProductData,getProductDetail,addToCart, myCart,decreaseCartItem,removeCartItem,createOrder,clearCart , paymentSuccess , getOrders};

@@ -1,9 +1,10 @@
-const { registermodel, productTable} = require("../dbConnection/db");
+const { registermodel, productTable, orderTable} = require("../dbConnection/db");
 const jwt = require('jsonwebtoken');
 let cloudinary = require('cloudinary').v2
 let fs = require('fs')
+const { ObjectId } = require('mongodb');
 require('dotenv').config();
-const multer = require('multer')
+const multer = require('multer');
 
 
 const checkToken= async (dt)=>{
@@ -306,5 +307,62 @@ const getProductDetail = async (req,res) => {
 }
 
 
+const getOrders = async (req, res) => {
+  try {
+    const chktoken = await checkToken(req.body);
+    if (!chktoken || !chktoken._id) {
+      return res.status(400).json({ success: false, msg: "User Not Verified!" });
+    }
 
-module.exports = {getSellerData,logout,removeAccount,getProductData,edituser,addProduct,multerErrorHandler,myProduct ,changeOnMarket,removeProduct,getProductDetail};
+
+    const datas = await orderTable.aggregate([
+      {
+        $match: {
+          sellerId: chktoken._id.toString() 
+        }
+      },
+      {
+        $addFields: {
+          customerIdObj: { $toObjectId: "$customerId" }
+        }
+      },
+      {
+        $lookup: {
+          from: 'registermodels',
+          localField: 'customerIdObj',
+          foreignField: '_id',
+          as: 'userData'        
+        }
+      },
+      {
+        $unwind: {
+          path: '$userData',
+          preserveNullAndEmptyArrays: true 
+        }
+      },
+      {
+        $project: {
+          productId:1,
+          productImage:1,
+          productName: 1,
+          count:1,
+          price: 1,
+          customerId: 1,
+          'userData.name': 1,
+          'userData.email': 1,
+          'userData._id': 1,
+          status: 1,
+          onCreated: 1
+        }
+      }
+    ]);
+
+    return res.status(200).json({ success: true, orders: datas });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ success: false, msg: "Server Error Occurred!" });
+  }
+};
+
+
+module.exports = {getSellerData,logout,removeAccount,getProductData,edituser,addProduct,multerErrorHandler,myProduct ,changeOnMarket,removeProduct,getProductDetail, getOrders};

@@ -9,6 +9,7 @@ import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 // import { loadStripe } from '@stripe/stripe-js';
+
 const AddToCart = () => {
     const {cart} = useSelector((state)=> state.cart);
     const navigate = useNavigate();
@@ -173,6 +174,7 @@ console.log(err);
                   console.log(err)
               })
               axios.post(`${baseurl}/clearcart`,{token:token});
+              dispatch(setCart({tag:true}))
               setProducts([]);
               dispatch(reset())
               navigate('/addtocart')
@@ -227,7 +229,7 @@ console.log(err);
                 <div className={styles.quantitys}>
     <button className={styles.decrement} onClick={()=> handeldecrement(product._id)} disabled={ids[product._id] <= 1}>-</button>
    
-    <input type="text" value={ids[product._id] || '0'} className={styles.quantityi} required/>
+    <input type="text" value={ids[product._id] || '0'} className={styles.quantityi} readOnly/>
     <button className={styles.increment} onClick={()=>handleincrement(product._id)} disabled={ids[product._id] >= 10}>+</button>
 </div>
 

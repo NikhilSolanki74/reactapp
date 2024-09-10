@@ -6,7 +6,8 @@ export const UnderlineSlice = createSlice( {
     l1:true,
     l2:false,
     l3:false,
-    l4:false
+    l4:false,
+    l5:false
   },
   reducers:{
     setLine:(state,action)=>{
@@ -16,6 +17,7 @@ export const UnderlineSlice = createSlice( {
             state.l2=false;
             state.l3=false;
             state.l4=false;
+            state.l5=false;
 
             break;
             case 1:
@@ -23,6 +25,7 @@ export const UnderlineSlice = createSlice( {
             state.l2=false;
             state.l3=false;
             state.l4=false;
+            state.l5=false;
 
            break;
 
@@ -31,6 +34,7 @@ export const UnderlineSlice = createSlice( {
             state.l2=true;
             state.l3=false;
             state.l4=false;
+            state.l5=false;
 
            break;
             case 3:
@@ -38,6 +42,7 @@ export const UnderlineSlice = createSlice( {
             state.l2=false;
             state.l3=true;
             state.l4=false;
+            state.l5=false;
 
             break;
             case 4:
@@ -45,6 +50,15 @@ export const UnderlineSlice = createSlice( {
             state.l2=false;
             state.l3=false;
             state.l4=true;
+            state.l5=false;
+            break;
+
+            case 5:
+            state.l1=false;
+            state.l2=false;
+            state.l3=false;
+            state.l4=false;
+            state.l5=true;
             break;
         }
     }

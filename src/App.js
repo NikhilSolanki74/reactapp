@@ -26,8 +26,10 @@ import ProductView from "./Component/SellerComponent/ProductView";
 import ProductViewu from "./Component/ProductViewu";
 import NotFound from "./Component/NotFound";
 import AddToCart from "./Component/AddToCart";
+import MyOrders from "./Component/MyOrders";
 import { WebSocketProvider } from "./WebSocketProvider";
 import { useSelector } from "react-redux";
+import CustomerOrder from "./Component/SellerComponent/CustomerOrder";
 
 function App() {
   const {user} = useSelector((state)=> state.user) || {};
@@ -86,6 +88,15 @@ function App() {
           element={
             <ProtectedRoute>
               <AddToCart/>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/myorders"
+          element={
+            <ProtectedRoute>
+              <MyOrders/>
             </ProtectedRoute>
           }
         />
@@ -181,6 +192,14 @@ function App() {
           element={
             <ProtectedSellerRoute>
               <ProductView/>
+            </ProtectedSellerRoute>
+          }
+        />
+        <Route
+          path="/customerorder"
+          element={
+            <ProtectedSellerRoute>
+              <CustomerOrder/>
             </ProtectedSellerRoute>
           }
         />

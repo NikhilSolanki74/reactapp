@@ -58,12 +58,16 @@ const userCart = mongoose.model("userCart",model5)
 
 
 const model6 = new mongoose.Schema({
+  productName:{type:String,require:true},
   sellerId:{type:String, required:true},
+  productImage:{type:String,required:true},
   customerId:{type:String,required:true },
   productId:{type:String,required:true},
   count:{type:Number,required:true},
   price:{type:Number,required:true},
-  otp:{type:Number,required:true}
+  otp:{type:Number,required:true},
+  status:{type:String,enum:['Pending','Shipped','Out For Delivery' ,'Delivered','Canceled','Return'],default:'Pending'},
+  onCreated:{type:Date,default:Date.now()}
 })
 const orderTable = mongoose.model("orderTable",model6)
 

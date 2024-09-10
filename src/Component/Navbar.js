@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import styles from './CSS/Navbar.module.css'
 import { useNavigate } from 'react-router-dom';
 import {useSelector,useDispatch} from "react-redux";
@@ -7,14 +7,16 @@ import { setUser } from '../Redux/Features/UserSlice'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCartShopping } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
-const Navbar = (props) => {
+const Navbar = () => {
+
   const linedata = useSelector((state)=> state.line);
   const {cart} = useSelector((state)=> state.cart);
   const dispatch = useDispatch()
     const navigate  = useNavigate()
     const userdata = useSelector((state)=> state.user)
     const name =  userdata !== null ? userdata.user.name : 'user';
-    const baseurl = process.env.REACT_APP_BASE_URL || ''
+    const baseurl = process.env.REACT_APP_BASE_URL || '';
+
   return (
     <nav className={styles.navbar}>
         <div className={styles.logo}>
@@ -27,7 +29,9 @@ const Navbar = (props) => {
             <li className={styles.item1} style={{textDecoration:linedata.l2 ? 'underline' : 'none',textUnderlineOffset:'4px'}}>Men</li>
             <li className={styles.item1} style={{textDecoration:linedata.l3 ? 'underline' : 'none',textUnderlineOffset:'4px'}}>Women</li>
             <li className={styles.item1 } style={{textDecoration:linedata.l4 ? 'underline' : 'none',textUnderlineOffset:'4px'}}>Kids</li>
-            <li className={styles.item1} style={{textDecoration:linedata.l5 ? 'underline' : 'none',textUnderlineOffset:'4px'}}>My Orders</li>
+            <li className={`${styles.item1} ${styles.itemlast}`} style={{textDecoration:linedata.l5 ? 'underline' : 'none',textUnderlineOffset:'4px'}} onClick={()=> navigate('/myorders')} >My Orders
+        <span style={{display: cart.tag ? " " : "none"}} className={styles.order}>New</span>
+            </li>   
           </ul>
         </div>
         <div className={styles.profile}>

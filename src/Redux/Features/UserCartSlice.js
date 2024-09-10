@@ -6,7 +6,8 @@ export const UserCartSlice = createSlice( {
    cart:{
     itemCount:0,
     itemsId:{},
-    userId:''
+    userId:'',
+    tag:false,
     
 }
   },
@@ -15,7 +16,7 @@ export const UserCartSlice = createSlice( {
         return {cart:{...state.cart,...action.payload}}
     },
     reset:()=>{
-      return {cart:{itemCount:0,itemId:[],userId:''}}
+      return {cart:{itemCount:0,itemId:[],userId:'',tag:false}}
     }
   }
 })

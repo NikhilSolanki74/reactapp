@@ -14,7 +14,6 @@ import { faAngleDown } from '@fortawesome/free-solid-svg-icons';
 import { setCart } from '../Redux/Features/UserCartSlice';
 import Loader from './Loader';
 const Homepage = () => {
-  
   const dispatch = useDispatch();
   const {product} = useSelector((state)=> state.product)
   const {products} = useSelector((state)=> state.products)

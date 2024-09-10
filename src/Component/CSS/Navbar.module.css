@@ -31,9 +31,9 @@
   }
   .item1:hover{
     transition:.2s linear;
-        color: rgba(202, 201, 201, 0.466);
+        color: rgba(255, 255, 255, 0.616);
         /* font-size: large; */
-    text-shadow: 1px 1px rgba(24, 24, 24, 0.548);
+    text-shadow: 0px 0px 4px rgba(0, 0, 0, 0.471);
 
   } 
 
@@ -107,3 +107,24 @@
     transition: 0.09s ease-in-out;
   
 }
+
+ .itemlast{
+  height: 15px;
+ }
+
+  .order{
+    text-decoration: underline  rgba(0, 0, 0, 0.933);
+    color: rgb(0, 0, 0);
+    font-size: 16px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  position: relative;
+  top: -30px;
+  right: -64px;
+  background-color: rgb(255, 255, 255);
+  width: 40px;
+  height: 19px;
+  border-radius: 40px;
+  }
+

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import styles from '../CSS/SellerCSS/SellerNavbar.module.css'
 import { useNavigate } from 'react-router-dom';
 import {useSelector,useDispatch} from "react-redux";
@@ -6,14 +6,21 @@ import { triggerNotification } from '../Notification';
 import { setUser } from '../../Redux/Features/UserSlice'
 import { reset } from '../../Redux/Features/ProductSlice';
 import { setProductData } from '../../Redux/Features/ProductDataSlice';
+// import { setCart } from '../../Redux/Features/UserCartSlice';
 import axios from 'axios';
 const SellerNavbar = () => {
+   
   const linedata = useSelector((state)=> state.line)
+  const {cart} = useSelector((state)=> state.cart)
+  const [tag,setTag] = useState(cart.tag)
   const dispatch = useDispatch()
     const navigate  = useNavigate()
     const userdata = useSelector((state)=> state.user)
     const name =  userdata !== null ? userdata.user.name : 'user';
-    const baseurl = process.env.REACT_APP_SELLER_BASE_URL || ''
+    const baseurl = process.env.REACT_APP_SELLER_BASE_URL || '';
+    useEffect(()=>{
+      setTag(cart.tag)
+   },[cart.tag])
   return (
     <nav className={styles.navbar}>
         <div className={styles.logo}>
@@ -25,7 +32,8 @@ const SellerNavbar = () => {
             <li className={styles.item1} style={{textDecoration:linedata.l1 ? 'underline' : 'none',textUnderlineOffset:'4px'}}  onClick={()=> navigate('/sellerhome')}>Home</li>
             <li className={styles.item1} style={{textDecoration:linedata.l4 ? 'underline' : 'none',textUnderlineOffset:'4px'}} onClick={()=> navigate('/addproduct')}>Add Product</li>
             <li className={styles.item1} style={{textDecoration:linedata.l2 ? 'underline' : 'none',textUnderlineOffset:'4px'}} onClick={()=> navigate('/sellerproduct')}>My Products</li>
-            <li className={styles.item1 } style={{textDecoration:linedata.l3 ? 'underline' : 'none',textUnderlineOffset:'4px'}}>Customer Orders</li>
+            <li className={`${styles.item1} ${styles.itemlast}` } style={{textDecoration:linedata.l3 ? 'underline' : 'none',textUnderlineOffset:'4px'}} onClick={()=> navigate('/customerorder')}>Customer Orders 
+            <span style={{display: tag ? " " : "none"}} className={styles.order}>New</span></li>
           </ul>
         </div>
         <div className={styles.profile}>
