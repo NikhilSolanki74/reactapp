@@ -50,7 +50,7 @@ const SellerProduct = () => {
       }
       
       axios.post(`${baseurl}/removeproduct`,{token:token,id:id}).then((response)=>{
-       console.log('ksdajlfsal')
+      //  console.log('ksdajlfsal')
        const data = response.data;
        if(data.success){
          triggerNotification(data.msg)

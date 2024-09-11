@@ -75,7 +75,7 @@ const Signin = () => {
             localStorage.removeItem('token')
           }
           localStorage.setItem('token',dat.token )
-          console.log(dat.token)
+          // console.log(dat.token)
           navigate('/home')
         }
           triggerNotification(dat.msg);

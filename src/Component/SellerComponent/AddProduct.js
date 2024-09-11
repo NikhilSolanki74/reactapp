@@ -66,7 +66,7 @@ const AddProduct = () => {
        })
      
     await axios.post(`${baseurl}/addproduct`,formData,{headers:{'Content-Type':'multipart/form-data'}}).then((response)=>{
-      console.log(response.data)
+      // console.log(response.data)
       const dat = response.data;
       if(dat.success){
         setCheck(false)
@@ -84,10 +84,10 @@ console.log(err)
 // console.log(image);
 const handlepreview =async () =>{
   if (image.length > 0) {
-    console.log(image[0])
+    // console.log(image[0])
     const firstImage = image[0];
     const imageUrl = URL.createObjectURL(firstImage);
-    console.log('hello',imageUrl)
+    // console.log('hello',imageUrl)
     setimg(imageUrl);
   }else{
     setimg('https://res.cloudinary.com/dzjvyptwz/image/upload/v1725276771/17252767695041725276769391photo-1523275335684-37898b6baf30.jpeg.jpg');

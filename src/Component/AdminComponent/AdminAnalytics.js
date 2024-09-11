@@ -30,7 +30,7 @@ const AdminAnalytics = () => {
               return triggerNotification('Error in chart data','error')
  
              }
-              console.log(data);
+              // console.log(data);
               if(data.activeUser.length === 0){
                 return triggerNotification('Failed in data fetch','error')
               }

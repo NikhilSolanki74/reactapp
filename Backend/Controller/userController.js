@@ -435,7 +435,7 @@ return res.json({success:false, msg:'server error occured'})
 
            addEvent(id , "password changed with URL")
         await registermodel.findByIdAndUpdate(id,{password:hash,token:'empty'})
-        console.log('password changed successfully')
+        // console.log('password changed successfully')
         return res.json({success:true,msg:"Password Changed Successfully"
         })
       
@@ -443,10 +443,10 @@ return res.json({success:false, msg:'server error occured'})
   } catch (err) {
     
       if (err.name === 'TokenExpiredError') {
-        console.log('Token has expired');
+        // console.log('Token has expired');
       return  res.json({success:false,msg:'Token is Expired'})
       } else if(err.name === 'JsonWebTokenError') {
-        console.log('Invalid token');
+        // console.log('Invalid token');
       return  res.json({success:false,msg:'Not a valid password change URL'})
       }else{
         console.log(err);
@@ -801,7 +801,7 @@ const paymentSuccess = async (req,res)=>{
     }
     const {clients} = req.body;
 
-    console.log('All connections: ', Object.keys(clients), 'jj');
+    // console.log('All connections: ', Object.keys(clients), 'jj');
 
     let { orderDetails } = req.body;  
     if (!orderDetails || Object.keys(orderDetails).length === 0) {

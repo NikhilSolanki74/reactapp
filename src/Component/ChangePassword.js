@@ -22,10 +22,10 @@ const ChangePassword = () => {
 
   useEffect(()=>{
     const query = new URLSearchParams(location.search)
-    console.log(query)
+    // console.log(query)
     const email = query.get('email') || '';
     const token = query.get('token') || '';
-    console.log(email,token)
+    // console.log(email,token)
     
     if(token === '' || email === ''){
       return navigate('/')

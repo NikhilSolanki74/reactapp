@@ -17,7 +17,7 @@ const ProductView = () => {
     const location = useLocation();
       useEffect(()=>{
        const query = new URLSearchParams(location.search)
-       console.log(query)
+      //  console.log(query)
        const id = query.get('id') || '';
        if(id === '' || token === ''){
       return  triggerNotification('something went wrong','info')
@@ -27,7 +27,7 @@ const ProductView = () => {
          if(datas.success){
              setData(datas.data); 
              setHookImage(datas.data.image)  ;
-             console.log(data);
+            //  console.log(data);
          }else{
             triggerNotification(datas.msg,'error')
          }

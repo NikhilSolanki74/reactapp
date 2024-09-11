@@ -28,7 +28,7 @@ useEffect(()=>{
         setUsers({...data}) 
        
         dispatch(setPagination({pages:data.pages,count:data.count}))
-        console.log(pagination)
+        // console.log(pagination)
         return setCheck(false);
       
       }else{
