@@ -11,7 +11,13 @@ import { useSelector,useDispatch } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAngleDown } from '@fortawesome/free-solid-svg-icons';
 import Loader from '../Loader';
+import { useWebSocket } from '../../WebSocketProvider'
+import { setCart } from '../../Redux/Features/UserCartSlice'
+
 const SellerHomepage = () => {
+
+ const {ws} = useWebSocket();
+
    const {product} = useSelector((state)=> state.product)
    const {products} = useSelector((state)=> state.products)
    const [chk ,setchk] = useState(product.more);
@@ -74,7 +80,6 @@ const loadMore = () => {
 }
 
 const name =  userdata !== null ? userdata.user.name : 'user';
- 
   return (
     <div className={styles.container}>
     <SellerNavbar/> 

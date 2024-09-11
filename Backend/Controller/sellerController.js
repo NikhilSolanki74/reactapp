@@ -30,7 +30,6 @@ return false;
 
 const getSellerData = async (req,res) =>{
     try {
-        console.log('aaya')
         const {token} = req.body
         if(!token){
     return res.json({success:false,msg:'you are Currently Logged Out'})
@@ -342,6 +341,7 @@ const getOrders = async (req, res) => {
       },
       {
         $project: {
+          onCreated:1,
           productId:1,
           productImage:1,
           productName: 1,
@@ -350,7 +350,6 @@ const getOrders = async (req, res) => {
           customerId: 1,
           'userData.name': 1,
           'userData.email': 1,
-          'userData._id': 1,
           status: 1,
           onCreated: 1
         }
@@ -365,4 +364,48 @@ const getOrders = async (req, res) => {
 };
 
 
-module.exports = {getSellerData,logout,removeAccount,getProductData,edituser,addProduct,multerErrorHandler,myProduct ,changeOnMarket,removeProduct,getProductDetail, getOrders};
+const changeStatus =async (req,res) =>{
+  try {
+    const chktoken =await checkToken(req.body);
+    if(!chktoken || !chktoken._id){
+     return res.json({success:false,msg:"User Not Verified !"})
+    }
+  
+  const {productId , customerId, onCreated , status} = req.body;
+  if(!ObjectId.isValid(productId) || !ObjectId.isValid(customerId)){
+    return res.json({success:false,msg:'Server Error Occured!'})
+   }
+  
+   const {clients} = req.body
+   let chkkk = true;
+      if (Object.keys(clients).length === 0) {
+        chkkk = false;
+      }
+   const data3 = await orderTable.findOne({sellerId:chktoken._id,productId:productId,customerId:customerId,onCreated:onCreated})
+      if(data3.status === 'Canceled'){
+        return res.json({success:false, msg:"User Canceled the Order!"})
+      }
+   const data = await orderTable.findOneAndUpdate({sellerId:chktoken._id,productId:productId,customerId:customerId,onCreated:onCreated},{status:status},{new:true})
+    if(data){
+      if(chkkk && clients[data.customerId]){
+        clients[data.customerId].send(JSON.stringify({
+          type: 'ORDER_CHANGE',
+          message: `Your Product ${data.productName.substring(0,10)}... is, ${status}`,
+          
+        }))
+      }
+      return res.json({success:true,msg:"Order status Changed Successfully"})
+    }else{
+  
+      return res.json({success:true,msg:"User Canceled the Order!"})
+    }
+  
+  
+  } catch (error) {
+    console.log(error);
+    return res.status(200).json({success:false,msg:"Server Error Occured !"})
+  }
+}
+
+
+module.exports = {getSellerData,logout,removeAccount,getProductData,edituser,addProduct,multerErrorHandler,myProduct ,changeOnMarket,removeProduct,getProductDetail, getOrders, changeStatus};

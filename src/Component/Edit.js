@@ -10,9 +10,9 @@ const Edit = () => {
     const validName = new RegExp("^[a-zA-Z ]{2,40}$");
 const validContact = new RegExp("^[0-9]{10,12}$");
 
-    const dispatch = useDispatch();
     const navigate = useNavigate();
     const userdata = useSelector((state)=> state.user)
+
 const baseurl = process.env.REACT_APP_BASE_URL || '';
   const token = localStorage.getItem('token') || '';
   
@@ -25,11 +25,11 @@ const baseurl = process.env.REACT_APP_BASE_URL || '';
         axios.post(baseurl+'/edit',{data:data}).then((response)=>{
            const dt = response.data;
          if(dt.success){
-             dispatch(setUser(dt.tokenData))
+            //  dispatch(setUser(dt.tokenData))
               triggerNotification(dt.msg)
-              
-             navigate('/profile');
-            return navigate(0);         
+              //  console.log(token,'hh')     
+                     navigate('/profile');
+           navigate(0);         
             
          }else{
           return  triggerNotification(dt.msg,'error')

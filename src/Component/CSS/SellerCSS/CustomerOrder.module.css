@@ -6,19 +6,15 @@
     background-size: cover; 
     background-attachment: fixed;
     display: flex;
-    /* gap: 3x; */
     justify-content: center;
     flex-direction: column;
-    /* align-items: center; */
 }
 
 .content{
-    /* border: 1px solid black; */
     height: 89.9vh;
     width: 90.9vw;
     margin-left: 46px;
     margin-bottom: 24px;
-    /* max-width: 1200px; */
     padding: 20px;
     background-color: #eef7ff;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -56,10 +52,14 @@
     border-top: 1px solid rgb(202, 202, 202);
     border-left: 1px solid rgb(202, 202, 202);
   }
+  .orderCard:hover{
+     transform: scale(1.01) ;
+     transition: .3s ease-in-out;
+
+  }
   
   .productImage {
     width: 100px;
-    /* overflow-x: hidden; */
     height: 100px;
     border-radius: 8px;
     margin-right: 20px;
@@ -72,16 +72,16 @@
     overflow: hidden;
     text-overflow: ellipsis;
     text-wrap: nowrap;
-    width: 900px;
-    max-width: 900px;
+    width: 600px;
+    max-width: 700px;
   }
   
   .orderInfo h3 {
     font-size: 1.3rem;
     color: #333;
     margin-bottom: 5px;
-    max-width: 900px;
-    width: 900px;
+    max-width: 600px;
+    width: 600px;
     overflow: hidden;
     text-overflow: ellipsis;
     text-wrap: nowrap;
@@ -102,13 +102,12 @@
 
   .status{
     display: inline;
-    /* margin-left: 10px; */
     color: rgb(255, 255, 255);
     border-radius: 8px;
     background-color: rgb(135, 255, 135);
-    /* width: 40px; */
+
     width:fit-content;
-    padding:4px 8px 4px 8px
+    padding:4px 8px 4px 8px;
   }
 
 
@@ -119,8 +118,6 @@
   }
 
   .total{
-    /* border: 1px solid black; */
-    /* margin-left: 400px; */
     font-size: 19px;
     margin-top: 5px;
     font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
@@ -138,3 +135,40 @@
     margin-right: 30px;
     color: #333;
   }
+
+
+
+  .status_toggle_container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background-color: #ffffffc6;
+    padding: 7px;
+    border-radius: 25px;
+    height: 100%;
+    max-height: 600px;
+    margin: 20px 20px 20px auto ;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.status_toggle_item {
+    flex: 1;
+    text-align: center;
+    padding: 10px;
+    cursor: pointer;
+    border-radius: 25px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.status_toggle_item.active {
+    background-color: #4caf50;
+    color: white;
+}
+
+.status_toggle_item:not(.active):hover {
+    background-color: #ddd;
+}
+
+.status_toggle_item + .status_toggle_item {
+    margin-left: 10px;
+}

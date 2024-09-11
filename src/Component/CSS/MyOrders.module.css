@@ -76,11 +76,11 @@
   }
   
   .orderInfo h2 {
-    font-size: 1.5rem;
+    font-size: 1.3rem;
     color: #333;
     margin-bottom: 5px;
     max-width: 900px;
-    width: 900px;
+    width: 800px;
     overflow: hidden;
     text-overflow: ellipsis;
     text-wrap: nowrap;
@@ -111,4 +111,33 @@
   }
 
 
-  
+.buttondiv{
+ display: flex;
+justify-content: flex-end;
+ width: 30%;
+}
+
+.cancelorder{
+ background-color: white;
+ border: 1px solid rgba(0, 0, 0, 0.156);
+height: 35px;
+padding: 0px 5px 0px 5px;
+border-radius: 10px;
+}
+
+.cancelorder:hover{
+  background-color: rgb(233, 233, 233);
+}
+
+
+.deleteorder{
+  background-color: #ff9494;
+  border: 1px solid rgba(0, 0, 0, 0.156);
+height: 35px;
+padding: 0px 5px 0px 5px;
+border-radius: 10px;
+}
+
+.deleteorder:hover{
+  background-color: #ef8b8b;
+}

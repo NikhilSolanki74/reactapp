@@ -487,8 +487,8 @@ const removeAccount = async (req,res)=>{
 
 const edituser = async (req,res)=>{
   try {
-    
-const {data} = req.body;
+    const {data} = req.body;
+    // console.log(data);
 if(!data){
   return res.json({success:false,msg:"Data not Found"});
 }
@@ -831,7 +831,7 @@ const paymentSuccess = async (req,res)=>{
     }
 
     arr.forEach(async (element) => {
-        console.log('hhh', element);
+        // console.log('hhh', element);
         const datt = new orderTable({
            productName:element.productName,
            customerId:chktoken._id,
@@ -914,4 +914,72 @@ console.log(err);
       }
   }
 
-module.exports = { Signin, Login,getUserData,resetPassword ,getOTP,changePassword,removeAccount,edituser,logout,getProductData,getProductDetail,addToCart, myCart,decreaseCartItem,removeCartItem,createOrder,clearCart , paymentSuccess , getOrders};
+
+  const cancelOrder = async (req,res) =>{
+try {
+  const chktoken =await checkToken(req.body);
+  if(!chktoken || !chktoken._id){
+   return res.json({success:false,msg:"User Not Verified !"})
+  }
+
+const {productId} = req.body;
+if(!ObjectId.isValid(productId)){
+  return res.json({success:false,msg:'Server Error Occured!'})
+ }
+
+ const {clients} = req.body
+ let chkkk = true;
+    if (Object.keys(clients).length === 0) {
+      chkkk = false;
+    }
+ const data = await orderTable.findOneAndUpdate({productId:productId,customerId:chktoken._id},{status:'Canceled'},{new:true})
+  if(data){
+    if(chkkk && clients[data.sellerId]){
+      clients[data.sellerId].send(JSON.stringify({
+        type: 'ORDER_CHANGE',
+        message: `User ${chktoken.name} , Canceled Item  ${data.productName.substring(0,10)+'...'}`,
+        
+      }))
+    }
+    return res.json({success:true,msg:"Order Canceled Successfully"})
+  }else{
+
+    return res.json({success:true,msg:"Your Order is gone to Shipment!"})
+  }
+
+
+} catch (error) {
+  console.log(error);
+  return res.status(200).json({success:false,msg:"Server Error Occured !"})
+}
+  }
+
+
+  const deleteOrder = async (req,res) =>{
+    try {
+      const chktoken =await checkToken(req.body);
+      if(!chktoken || !chktoken._id){
+       return res.json({success:false,msg:"User Not Verified !"})
+      }
+    
+    const {productId} = req.body;
+    if(!ObjectId.isValid(productId)){
+      return res.json({success:false,msg:'Server Error Occured!'})
+     }
+   
+     const data = await orderTable.findOneAndDelete({productId:productId,customerId:chktoken._id,status:"Canceled"},{status:'Canceled'},{new:true})
+      if(data){
+        return res.json({success:true,msg:"Order Deleted Successfully"})
+      }else{
+    
+        return res.json({success:false,msg:"Server Error Occured !"})
+      }
+    
+    
+    } catch (error) {
+      console.log(error);
+      return res.status(200).json({success:false,msg:"Server Error Occured !"})
+    }
+  }
+
+module.exports = { Signin, Login,getUserData,resetPassword ,getOTP,changePassword,removeAccount,edituser,logout,getProductData,getProductDetail,addToCart, myCart,decreaseCartItem,removeCartItem,createOrder,clearCart , paymentSuccess , getOrders , cancelOrder , deleteOrder};

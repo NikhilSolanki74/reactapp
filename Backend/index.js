@@ -42,8 +42,8 @@ app.use(function(req, res, next) {
 });
 
 app.use('/api/v1/user/',(req,res,next)=>{req.body.clients = clients;next()}, userRoutes);
+app.use('/api/v1/seller/',(req,res,next)=>{req.body.clients = clients;next()}, sellerRoutes);
 app.use('/api/v1/admin/', adminRoutes);
-app.use('/api/v1/seller/', sellerRoutes);
 
 server.listen(4000, () => {
     console.log('App is running on port:4000');

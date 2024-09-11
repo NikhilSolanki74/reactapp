@@ -9,17 +9,14 @@ export const useWebSocket = () => {
 };
 
 export const WebSocketProvider = ({ sellerId, children }) => {
-    const cart = useSelector(state=> state.cart)
     const dispatch = useDispatch();
     const [ws, setWs] = useState(null);
-    const [notifications, setNotifications] = useState([]);
 
     useEffect(() => {
         const socket = new WebSocket('ws://localhost:4000');
         setWs(socket);
 
         socket.onopen = () => {
-            console.log(`Connected as seller ${sellerId}`);
             socket.send(JSON.stringify({ sellerId }));
         };
 
@@ -27,9 +24,12 @@ export const WebSocketProvider = ({ sellerId, children }) => {
             const data = JSON.parse(event.data);
             if (data.type === 'ORDER_NOTIFICATION') {
                 triggerNotification(data.message,"info")
-                setNotifications((prev) => [...prev, data.message]);
-                // console.log(notifications,'notify');
                 dispatch(setCart({tag:true}));
+
+            }else if(data.type === 'ORDER_CHANGE'){
+                triggerNotification(data.message,"info")
+                dispatch(setCart({tag:true}));
+
             }
         };
 
@@ -37,7 +37,7 @@ export const WebSocketProvider = ({ sellerId, children }) => {
     }, [sellerId]);
 
     return (
-        <WebSocketContext.Provider value={{ ws, notifications }}>
+        <WebSocketContext.Provider value={{ ws }}>
             {children}
         </WebSocketContext.Provider>
     );

@@ -174,10 +174,10 @@ console.log(err);
                   console.log(err)
               })
               axios.post(`${baseurl}/clearcart`,{token:token});
-              dispatch(setCart({tag:true}))
               setProducts([]);
               dispatch(reset())
               navigate('/addtocart')
+              dispatch(setCart({tag:true}))
               triggerNotification("Payment Successfull, Your Order Placed !")
               
             },
