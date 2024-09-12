@@ -899,7 +899,7 @@ console.log(err);
        return res.json({success:false,msg:"User Not Verified !"})
       }
  
-    const data =   await orderTable.find({customerId:chktoken._id},'productImage productName count price status productId')
+    const data =   await orderTable.find({customerId:chktoken._id},'productImage productName count price status productId onCreated')
     .then((orders)=>{
       // console.log(orders,'hhhhhkkkkkkkkk',chktoken._id)
        return res.json({success:true , orders})
@@ -922,7 +922,7 @@ try {
    return res.json({success:false,msg:"User Not Verified !"})
   }
 
-const {productId} = req.body;
+const {productId,onCreated} = req.body;
 if(!ObjectId.isValid(productId)){
   return res.json({success:false,msg:'Server Error Occured!'})
  }
@@ -932,12 +932,12 @@ if(!ObjectId.isValid(productId)){
     if (Object.keys(clients).length === 0) {
       chkkk = false;
     }
- const data = await orderTable.findOneAndUpdate({productId:productId,customerId:chktoken._id},{status:'Canceled'},{new:true})
+ const data = await orderTable.findOneAndUpdate({productId:productId,customerId:chktoken._id,onCreated:onCreated},{status:'Canceled'},{new:true})
   if(data){
     if(chkkk && clients[data.sellerId]){
       clients[data.sellerId].send(JSON.stringify({
         type: 'ORDER_CHANGE',
-        message: `User ${chktoken.name} , Canceled Item  ${data.productName.substring(0,10)+'...'}`,
+        message: `${chktoken.name} , Canceled Item  ${data.productName.substring(0,10)+'...'}`,
         
       }))
     }
@@ -962,12 +962,12 @@ if(!ObjectId.isValid(productId)){
        return res.json({success:false,msg:"User Not Verified !"})
       }
     
-    const {productId} = req.body;
+    const {productId,onCreated} = req.body;
     if(!ObjectId.isValid(productId)){
       return res.json({success:false,msg:'Server Error Occured!'})
      }
    
-     const data = await orderTable.findOneAndDelete({productId:productId,customerId:chktoken._id,status:"Canceled"},{status:'Canceled'},{new:true})
+     const data = await orderTable.findOneAndDelete({productId:productId,customerId:chktoken._id,status:"Canceled",onCreated:onCreated},{new:true})
       if(data){
         return res.json({success:true,msg:"Order Deleted Successfully"})
       }else{

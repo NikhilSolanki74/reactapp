@@ -249,13 +249,13 @@ const changeOnMarket =async (req,res) => {
         const {id } = req.body;
          await productTable.findByIdAndUpdate(id ,{ $bit: { onMarket: { xor: 1 } } }).catch((err)=>{
     console.log(err);
-    return res.json({success:false,msg:"Failed to change !"})
+    return res.json({success:false,msg:"Failed to change Market Visibility !"})
          })
 
-    return res.json({success:true, msg:'Change Successfully'})  
+    return res.json({success:true, msg:'Product Market Visibility Changed Successfully'})  
      } catch (error) {
       console.log(error);
-     return  res.json({success:false , msg:"Failed in change !"})
+     return  res.json({success:false , msg:"Failed in change Market Visibility !"})
      }
 }
 

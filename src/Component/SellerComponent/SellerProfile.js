@@ -7,7 +7,10 @@ import { useNavigate } from 'react-router-dom';
 import { triggerNotification } from '../Notification';
 import { setUser } from '../../Redux/Features/UserSlice';
 import { setLine } from '../../Redux/Features/UnderlineSlice';
+import { useConfirm } from '../../ConfirmWindow'
+
 const SellerProfile = () => {
+  const { confirm,ConfirmWindow } = useConfirm();
   const baseurl = process.env.REACT_APP_SELLER_BASE_URL || '';
     const dispatch = useDispatch()
     dispatch(setLine(0));
@@ -18,8 +21,8 @@ const SellerProfile = () => {
     }
   
   
-  const handleRemove=()=>{
-    if(!window.confirm('Do you really want to Delete your Account Permanently !')){
+  const handleRemove=async ()=>{
+    if(!await confirm('Do you really want to Delete your Account Permanently !')){
         return 
     }
     const id = usedata.user._id || '';
@@ -49,6 +52,7 @@ const SellerProfile = () => {
   return (
     <div className={styles.container}>
     <Navbar/>
+    <ConfirmWindow/>
     <div className={styles.profileprimary}>
     <div className={styles.profilediv}>
     <div className={styles.image}>

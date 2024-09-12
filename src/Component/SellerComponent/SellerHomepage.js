@@ -12,9 +12,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAngleDown } from '@fortawesome/free-solid-svg-icons';
 import Loader from '../Loader';
 import { useWebSocket } from '../../WebSocketProvider'
-import { setCart } from '../../Redux/Features/UserCartSlice'
+import Loading2 from '../Loading2';
 
 const SellerHomepage = () => {
+  const [loading , setLoading] = useState(false)
 
  const {ws} = useWebSocket();
 
@@ -30,23 +31,29 @@ const SellerHomepage = () => {
 const userdata = useSelector((state)=> state.user)
 
 useEffect(()=>{
+  
   dispatch(setLine(1));  
   if(product.ck ){
+    setLoading(true)
     // dispatch(setProductData([]));
     setncheck(true)
      dispatch(setProduct({ck:false}))
     axios.post(`${baseurl}/getproductdata`,{token:token,offset:product.offset,limit:product.limit}).then((response)=>{
+      setLoading(false)
         const data = response.data;
         if(data.success){
+          setLoading(false)
           setncheck(false)
           setchk(data.more)
           dispatch(setProduct({count:data.count,offset:product.offset+product.limit,more:data.more}));
           dispatch(setTheseProductsOnly(data.productdata));
         }else{
+          setLoading(false)
           setncheck(false);
           triggerNotification('Data not Fetched',"error")
         }
     }).finally(()=>{
+      setLoading(false)
       setncheck(false)
 
     }
@@ -84,7 +91,7 @@ const name =  userdata !== null ? userdata.user.name : 'user';
     <div className={styles.container}>
     <SellerNavbar/> 
     <div className={styles.productGrid}>
-        {products.map((productD) => (
+        {loading ? <Loading2/> : products.map((productD) => (
           <ProductCard key={productD._id} product={productD} />
         ))}
       </div>

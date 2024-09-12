@@ -13,7 +13,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAngleDown } from '@fortawesome/free-solid-svg-icons';
 import { setCart } from '../Redux/Features/UserCartSlice';
 import Loader from './Loader';
+import Loading2 from './Loading2'
 const Homepage = () => {
+  const [loading , setLoading] = useState(false);
   const dispatch = useDispatch();
   const {product} = useSelector((state)=> state.product)
   const {products} = useSelector((state)=> state.products)
@@ -29,24 +31,30 @@ const userdata = useSelector((state)=> state.user)
 useEffect(()=>{
  dispatch(setLine(1));  
  if(product.ck){
+  setLoading(true)
    setncheck(true)
     dispatch(setProduct({ck:false}))
    axios.post(`${baseurl}/getproductdata`,{token:token,offset:product.offset,limit:product.limit}).then((response)=>{
+    setLoading(false)
        const data = response.data;
        if(data.success){
+        setLoading(false)
          setncheck(false)
          setchk(data.more)
          dispatch(setProduct({count:data.count,offset:product.offset+product.limit,more:data.more}));
          dispatch(setTheseProductsOnly(data.productdata));
        }else{
+        setLoading(false)
          setncheck(false);
          triggerNotification('Data not Fetched',"error")
        }
    }).catch((err)=>{
+    setLoading(false)
   console.log(err);
   triggerNotification("Error in Data Fetching Request !","info")
 
    }).finally(()=>{
+    setLoading(false)
      setncheck(false)
 
    }
@@ -110,7 +118,7 @@ const name =  userdata !== null ? userdata.user.name : 'user';
    <div className={styles.container}>
    <Navbar count={count}/> 
    <div className={styles.productGrid}>
-       {products.map((productD) => (
+       {loading ? <Loading2/> :  products.map((productD) => (
          <ProductCardu key={productD._id} product={productD} url={'/productviewu'} handleAddCart={handleAddCart} ids={ids}/>
        ))}
      </div>

@@ -7,7 +7,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {faCircle} from '@fortawesome/free-solid-svg-icons';
 import { setProductData } from '../Redux/Features/ProductDataSlice';
 import { useDispatch } from 'react-redux';
+import Loading2 from './Loading2'
 const Login = () => {
+const [loading , setLoading] = useState(false)
   const dispatch = useDispatch();
   const baseurl = process.env.REACT_APP_BASE_URL || '';
   
@@ -40,12 +42,15 @@ const handlecaps =(e)=>{
 
 const handleSubmit = async () => {
   try {
+    setLoading(true)
    dispatch(setProductData([]));
     if (validEmail.test(data.email) && validPassword.test(data.password)) {
+      
       const response = await axios.post(`${baseurl}/login`, data);
       const dat = response.data;
       
       if (dat.success) {
+        setLoading(false)
         if (localStorage.getItem('token')) {
           localStorage.removeItem('token');
         }
@@ -62,15 +67,18 @@ const handleSubmit = async () => {
           return triggerNotification(dat.msg);
         }
       } else {
+        setLoading(false)
         return triggerNotification(dat.msg, 'error');
       }
     } else {
+      setLoading(false)
       triggerNotification('Email or password is wrong!', 'error');
     }
   } catch (err) {
+    setLoading(false)
     console.error('Error in sending the request', err); // Log the error for debugging
     triggerNotification('Server is Not Reachable !', 'error'); // Notify the user of the error
-  }
+  } 
 };
 
 
@@ -102,6 +110,7 @@ const handleSubmit = async () => {
         Show Password &nbsp; <input className={styles.checkbox} onChange={()=>showpass()} type='checkbox'></input>
         </div>
           </div>
+          { loading ? <Loading2/> : ''}
           <button type="submit" className={styles.button}>Login</button>
         </form>
         <p className={styles.p}>

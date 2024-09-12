@@ -6,7 +6,9 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom'; 
 import { triggerNotification } from './Notification';
 import { setUser } from '../Redux/Features/UserSlice';
+import { useConfirm } from '../ConfirmWindow'
 const Profile = () => {
+  const { confirm,ConfirmWindow } = useConfirm();
   const token = localStorage.getItem('token') || '';
   const baseurl = process.env.REACT_APP_BASE_URL || '';
     const dispatch = useDispatch()
@@ -17,8 +19,9 @@ const Profile = () => {
     }
   
   
-  const handleRemove=()=>{
-    if(!window.confirm('Do you really want to Delete your Account Permanently !')){
+  const handleRemove=async ()=>{
+    
+    if(!await confirm('Do you really want to Delete your Account Permanently !')){
         return 
     }
     const id = usedata.user._id || '';
@@ -48,6 +51,7 @@ const Profile = () => {
   return (
     <div className={styles.container}>
     <Navbar/>
+    <ConfirmWindow/>
     <div className={styles.profileprimary}>
     <div className={styles.profilediv}>
     <div className={styles.image}>

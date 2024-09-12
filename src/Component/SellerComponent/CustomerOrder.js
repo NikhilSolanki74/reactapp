@@ -9,7 +9,9 @@ import { useNavigate } from 'react-router-dom'
 import SellerNavbar from './SellerNavbar'
 import { setCart } from '../../Redux/Features/UserCartSlice'
 import { useWebSocket } from '../../WebSocketProvider'
+import Loading2 from '../Loading2'
 const CustomerOrder = () => {
+  const [loading ,setLoading] = useState(false);
     const {ws} = useWebSocket();
     // console.log(ws,'ggg');
   const navigate = useNavigate();
@@ -20,17 +22,21 @@ const CustomerOrder = () => {
     const [orders, setOrd] = useState(order.orders);
     const [k ,setk] = useState({})
    useEffect(()=>{
-    
+    setLoading(true)
     dispatch(setLine(3))
 
     axios.post(`${baseurl}/getorders`, {token:token}).then((response)=>{
+      setLoading(false)
 const data = response.data;
 dispatch(setOrders(data.orders));
 console.log(orders);
    setOrd(data.orders);
     }).catch((err)=>{
+      setLoading(false)
         console.log(err);
         triggerNotification('Error in Order Fetching');
+    }).finally(()=>{
+      setLoading(false)
     })
    },[k])
 
@@ -89,6 +95,29 @@ const handleStatusChange = (status , pid , cid , oncr) =>{
  })
 }
 
+const handleColor = (status) =>{
+  switch (status) {
+    case 'Canceled':
+      return '#ff9494'
+      break;
+  
+      case 'Shipped':
+      return '#7ec5ffd6'
+      break;
+      case 'Out For Delivery':
+      return '#ffee9bd6'
+      break;
+  
+      case 'Delivered':
+      return '#9bffe6'
+      break;
+  
+    default:
+      return  ''
+      break;
+  }
+  }
+
    return (
     <div className={styles.container}>
       <SellerNavbar />
@@ -110,7 +139,7 @@ const handleStatusChange = (status , pid , cid , oncr) =>{
                   <p>Quantity: <span className={styles.dynamic}>{order.count}</span></p>
                   <p>Order Time: <span className={styles.dynamic}> {dateConverter(order.onCreated)}</span></p>
                   <p>Paid: <span className={styles.dynamic}>{order.price} Rs</span></p>
-                  <p>Status:<span className={styles.dynamic}><p style={{backgroundColor:order.status === "Canceled" ? "#ff9494" : ""}} className={styles.status}>{order.status}</p></span></p>
+                  <p>Status:<span className={styles.dynamic}><p style={{backgroundColor:handleColor(order.status)}} className={styles.status}>{order.status}</p></span></p>
                 </div>
                 <div className={styles.status_toggle_container}>
             <div
@@ -142,6 +171,7 @@ const handleStatusChange = (status , pid , cid , oncr) =>{
               </div>
             ))
           ) : (
+            loading ? <Loading2/> :
             <div style={{display:"flex",justifyContent:'center',flexDirection:'column',}}>
 
             <p className={styles.noOrders}>You have no current orders.</p>

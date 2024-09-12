@@ -6,7 +6,11 @@ import SellerNavbar from './SellerNavbar';
 import axios from 'axios';
 import { triggerNotification } from '../Notification';
 import { useNavigate } from 'react-router-dom';
+import Loading2 from '../Loading2';
+import { useConfirm } from '../../ConfirmWindow'
 const SellerProduct = () => {
+  const { confirm,ConfirmWindow } = useConfirm();
+  const [loading, setLoading] = useState(false)
   const navigate = useNavigate();
   const token = localStorage.getItem('token') || '';
   const [products, setProducts] = useState([]);
@@ -14,14 +18,25 @@ const SellerProduct = () => {
   const baseurl = process.env.REACT_APP_SELLER_BASE_URL || '';
     const dispatch = useDispatch();
     useEffect(()=>{
+      setLoading(true)
          dispatch(setLine(2))
         axios.post(`${baseurl}/myproduct`,{token:token}).then((response)=>{
-         const data = response.data;
+      setLoading(false)
+      const data = response.data;
           // console.log(data)
           if (data.success) {
+      setLoading(false)
             setProducts(data.data);
           }
-        }) 
+      setLoading(false)
+        }).catch((err)=>{
+      setLoading(false)
+      console.log(err)
+          triggerNotification("Error in Sending Request!",'error')
+      setLoading(false)
+        }).finally(()=>{
+      setLoading(false)
+        })
     },[])
 
     const handleOnMarket = (id) => {
@@ -44,8 +59,9 @@ const SellerProduct = () => {
       })
     }
 
-    const handleRemove = (id) => {
-      if(!window.confirm("do you Really want to Remove Product Permanently ?")){
+    const handleRemove =async (id) => {
+      
+      if(!await confirm("do you Really want to Remove Your Product Permanently ?")){
        return
       }
       
@@ -75,6 +91,7 @@ const SellerProduct = () => {
   return (
     <div className={styles.container}>
       <SellerNavbar/>
+      <ConfirmWindow/>
      <div className={styles.productcontainer}>
           <div className={styles.productlist}>
           {products.length > 0 ? (
@@ -97,6 +114,7 @@ const SellerProduct = () => {
               </div>
             ))
           ) : (
+            loading ? <Loading2/> :
             <div className={styles.nodata}>
 
             <p>No Data Found</p>

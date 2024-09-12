@@ -8,9 +8,12 @@ import { triggerNotification } from './Notification'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
+import Loading2 from './Loading2'
 // import { loadStripe } from '@stripe/stripe-js';
 
 const AddToCart = () => {
+  const [loadingbtn,setbtn] = useState(false)
+  const [loading ,setLoading] = useState(false);
     const {cart} = useSelector((state)=> state.cart);
     const navigate = useNavigate();
     const [cal, setCal] = useState({subtotal:0,shipping:0,  tax:0,total:0});
@@ -25,16 +28,22 @@ const [count , setCount] = useState(cart.itemCount)
 
     useEffect(()=>{
         dispatch(setLine(0))
+        setLoading(true)
        axios.post(`${baseurl}/mycart`,{token:token}).then((response)=>{
+        setLoading(false)
         const data = response.data;
          // console.log(data)
          if (data.success) {
            setProducts(data.data);
          }
        }).catch((err)=>{
+        setLoading(false)
         console.log(err)
         triggerNotification("Error in fetching cart products","error")
-       }) 
+       }).finally(()=>{
+        setLoading(false)
+
+       })
    },[])
 
    const handleincrement = (id) => {
@@ -123,29 +132,35 @@ console.log(err);
  },[ids , products , count])
 
  const loadRazorpayScript = () => {
+  setbtn(true)
   return new Promise((resolve) => {
       const script = document.createElement('script');
       script.src = 'https://checkout.razorpay.com/v1/checkout.js';
       script.onload = () => {
+        setbtn(false)
           resolve(true);
       };
       script.onerror = () => {
+        setbtn(false)
           resolve(false);
       };
+      setbtn(false)
       document.body.appendChild(script);
   });
 };
 
 
   const handlePayment = async () => {
-  
+   setbtn(true);
       const isScriptLoaded = await loadRazorpayScript();
       if (!isScriptLoaded) {
+        setbtn(false)
           alert('Failed to load Razorpay script');
           return;
       }
 
         try {
+          setbtn(true)
            let productname = products[0].product;
     if(products.length > 1){
        productname += ` and ${products.length-1} Other`;
@@ -187,26 +202,19 @@ console.log(err);
             modal: {
               ondismiss: function () {
                 navigate('/home')
-                triggerNotification("Payment Unsuccessfull !", "error")
+                triggerNotification("Payment Unsuccessfull !", "info")
               } 
             }
           };
-    
+       setbtn(false)
           const rzp = new window.Razorpay(options);
           rzp.open();
         } catch (error) {
+          setbtn(false)
           console.error(error);
         }
-     
-    
-    
-
-
-
-  };
-
   
-
+  };
 
   return (
     <div className={styles.container}>
@@ -239,6 +247,7 @@ console.log(err);
             )) 
             
           ) : (
+            loading ? <Loading2/> :
             <div className={styles.nodata}>
 
             <h2 style={{fontFamily:'monospace',color:'gray'}}>Your Cart is Empty</h2>
@@ -275,6 +284,7 @@ console.log(err);
             <div className={styles.detailRow}>
            <input type='radio' defaultChecked/> 
            <label>Carl-Leverkus-Str. 95c, Restorffdorf, HH 24358,restohuf...</label>
+           {loadingbtn && <Loading2/>}
             </div>
             <button className={styles.checkoutButton} onClick={handlePayment}>Buy Now</button>
         </div>

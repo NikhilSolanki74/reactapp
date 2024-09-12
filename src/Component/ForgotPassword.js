@@ -4,8 +4,9 @@ import { faLock } from '@fortawesome/free-solid-svg-icons';
 import styles from './CSS/ForgotPassword.module.css';
 import { triggerNotification } from './Notification';
 import axios from 'axios';
-
+import Loading2 from './Loading2';
 const ForgotPassword = () => {
+  const [loading  , setLoading] = useState(false);
   const baseurl = process.env.REACT_APP_BASE_URL || '';
   const [otpbutton , setOtpButton] = useState({dis:false,name:'Change Password'})
   const form = useRef();
@@ -22,22 +23,27 @@ const ForgotPassword = () => {
 );
 
 const handleOTP =async ()=>{
+  setLoading(true)
 if(validEmail.test(data.email)){
   setOtpButton({dis:true,name:'Loading...'})
   await axios.post(baseurl+'/getotp',{email:data.email}).then((response)=>{
+    setLoading(false)
 const data = response.data; 
 if(data.success){
+  setLoading(false)
   setOtpButton({dis:true,name:'Change Password'})
   setInputVisibility(false)
  
  return triggerNotification(data.msg)
 }else{
+  setLoading(false)
   setOtpButton({dis:false,name:'Change Password'})
   setData((e)=>{return {...e, email:''}})
  return triggerNotification(data.msg , 'error')
 }
   })
 }else{
+  setLoading(false)
   triggerNotification('Email is not valid','error')
 }
 }
@@ -75,6 +81,7 @@ if(data.success){
           />
          
         </div>
+        {loading ? <Loading2/> : ''}
         <button type="submit" style={{width:'65%'}} onClick={()=>{handleOTP()}} className={styles.otpButton} disabled={otpbutton.dis}>
          { otpbutton.name}
         </button>

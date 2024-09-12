@@ -7,7 +7,10 @@ import { useNavigate } from 'react-router-dom';
 import { triggerNotification } from '../Notification';
 import { setUser } from '../../Redux/Features/UserSlice';
 import { setLine } from '../../Redux/Features/UnderlineSlice';
+import { useConfirm } from '../../ConfirmWindow'
+
 const AdminProfile = () => {
+  const { confirm,ConfirmWindow } = useConfirm();
   const baseurl = process.env.REACT_APP_ADMIN_BASE_URL || '';
     const dispatch = useDispatch()
     const navigate = useNavigate()
@@ -17,8 +20,8 @@ const AdminProfile = () => {
     }
   useEffect(()=>{dispatch(setLine(0))},[]);
   
-  const handleRemove=()=>{
-    if(!window.confirm('Do you really want to Delete your Account Permanently !')){
+  const handleRemove=async ()=>{
+    if(!await confirm('Do you really want to Delete your Account Permanently !')){
         return 
     }
     const id = usedata.user._id || '';
@@ -48,6 +51,7 @@ const AdminProfile = () => {
   return (
     <div className={styles.container}>
     <AdminNavbar/>
+    <ConfirmWindow/>
     <div className={styles.profileprimary}>
     <div className={styles.profilediv}>
     <div className={styles.image}>

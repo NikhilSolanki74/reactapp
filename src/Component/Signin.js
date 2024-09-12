@@ -5,8 +5,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faEnvelope, faPhone, faLock, faCheck,faCircle } from '@fortawesome/free-solid-svg-icons';
 import { triggerNotification } from "./Notification";
 import { useNavigate } from "react-router-dom";
-
+import Loading2 from "./Loading2";
 const Signin = () => {
+  const [loading , setLoading] = useState(false);
   const [caps,setCaps] = useState(false);
   const baseurl = process.env.REACT_APP_BASE_URL || '';
   const navigate = useNavigate()
@@ -44,29 +45,38 @@ const Signin = () => {
   const validContact = new RegExp("^[0-9]{10,12}$");
 
   const handlesubmit = () => {
+    setLoading(true)
     if (data.password === data.confirmpassword) {
+      
       if (!validName.test(data.name)) {
+        setLoading(false)
         return triggerNotification("Enter Valid Name", "info");
       }
       if (!validEmail.test(data.email)) {
+        setLoading(false)
         return triggerNotification("Enter Valid Email", "info");
       }
       if (!validContact.test(data.contact)) {
+        setLoading(false)
         return triggerNotification("Enter Valid Contact Number", "info");
       }
       if (data.password.length < 6) {
+        setLoading(false)
         return triggerNotification("Minimum Password length is 6 ", "info");
       }
       if (!validPassword.test(data.password)) {
+        setLoading(false)
         return triggerNotification("Enter Valid Password", "info");
       }
     } else {
+      setLoading(false)
       return triggerNotification("Confirm Password not matched", "info");
     }
 
     axios
       .post(baseurl+"/signin", data)
       .then((response) => {
+        setLoading(false)
         if (response.data) {
           const dat = response.data;
           // console.log(dat);
@@ -80,6 +90,7 @@ const Signin = () => {
         }
           triggerNotification(dat.msg);
         }else{
+          setLoading(false)
         return triggerNotification('Server is not responding ,wait few second before retry', 'error');
 
         }
@@ -89,8 +100,11 @@ const Signin = () => {
 
       })
       .catch((err) => {
+        setLoading(false)
         console.log(err);
         return triggerNotification("there is an error in submitting data");
+      }).finally(()=>{
+        setLoading(false)
       });
   };
 
@@ -209,6 +223,7 @@ const Signin = () => {
         <div style={{textDecoration:'none',marginLeft:'55%'}} className={styles.loginLink}>
         Show Password &nbsp; <input onChange={()=>showpass()} type='checkbox'></input>
         </div>
+        {loading ? <Loading2/> : ''}
         <button type="submit" className={styles.submitButtons}>
           Submit
         </button>

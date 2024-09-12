@@ -5,7 +5,9 @@ import styles from './CSS/ResetPassword.module.css';
 import { triggerNotification } from './Notification';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import Loading2 from './Loading2';
 const ResetPassword = () => {
+  const [loading , setLoading ] = useState(false)
   const baseurl = process.env.REACT_APP_BASE_URL || '';
   const navigate = useNavigate();
   const form = useRef();
@@ -34,29 +36,44 @@ const ResetPassword = () => {
     '^[a-zA-Z0-9._:$!%-]+@[a-zA-Z0-9.-]+.[a-zA-Z]$'
   );
   const handleSubmit = async () => {
+    setLoading(true)
     if (data.newpassword === data.confirmpassword) {
       if (!validEmail.test(data.email)) {
+        setLoading(false)
         return triggerNotification('your Email is not valid', 'error');
       }
       if (!validPassword.test(data.currentpassword)) {
+        setLoading(false)
         return triggerNotification('Current Password is not valid', 'error');
       }
       if (!validPassword.test(data.newpassword)) {
+        setLoading(false)
         return triggerNotification('New Password is not valid', 'error');
       }
 
        await axios.post(baseurl+'/resetpassword',data).then((response)=>{
+        setLoading(false)
           const data = response.data
           if(data.success){
+            setLoading(false)
             navigate('/');
              return triggerNotification(data.msg)
              
           }else{
+            setLoading(false)
            return triggerNotification(data.msg, 'error')
           }
+       }).catch((err)=>{
+        setLoading(false)
+        console.log(err);
+        triggerNotification("server not Reachable! ",'error')
+
+       }).finally(()=>{
+        setLoading(false)
        })
  
     } else {
+      setLoading(false)
       triggerNotification('Confirm Password does not match!', 'error');
     }
   };
@@ -141,6 +158,7 @@ const ResetPassword = () => {
         <div style={{textDecoration:'none'}} className={styles.loginLink}>
         Show Password &nbsp; <input onChange={()=>showpass()} type='checkbox'></input>
         </div>
+        {loading ? <Loading2/> : ''}
         <button type="submit" className={styles.submitButton}>
           Submit
         </button>

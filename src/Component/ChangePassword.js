@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLock, faKey,faCheck } from '@fortawesome/free-solid-svg-icons'; 
@@ -6,8 +5,9 @@ import styles from './CSS/ChangePassword.module.css';
 import { triggerNotification } from './Notification';
 import axios from 'axios';
 import { useNavigate,useLocation } from 'react-router-dom';
-
+import Loading2 from './Loading2'
 const ChangePassword = () => {
+  const [loading , setLoading] = useState(false)
   const baseurl = process.env.REACT_APP_BASE_URL || '';
     const location = useLocation();
   const navigate = useNavigate();
@@ -49,23 +49,35 @@ const ChangePassword = () => {
 
 
   const handleSubmit = async () => {
+    setLoading(true);
     if (data.newpassword === data.confirmpassword) {
       
       if (!validPassword.test(data.newpassword)) {
+        setLoading(false)
         return triggerNotification('New Password is not valid', 'error');
       }
      await axios.post(baseurl+'/changepassword',data).then((response)=>{
+      setLoading(false)
       const data = response.data;
        if(data.success){
+        setLoading(false)
            navigate('/')
            return triggerNotification(data.msg)
        }else{
+        setLoading(false)
         navigate('/')
          return triggerNotification(data.msg,'error')
        }
+      }).catch((err)=>{
+        setLoading(false)
+console.log(err)
+triggerNotification("Server Not Reachable !", 'error')
+      }).finally(()=>{
+        setLoading(false)
       })
       
     } else {
+      setLoading(false)
       triggerNotification('Confirm Password does not match!', 'error');
     }
   };
@@ -130,6 +142,7 @@ const ChangePassword = () => {
         <div style={{textDecoration:'none' }} className={styles.loginLink}>
         Show Password &nbsp; <input onChange={()=>showpass()} type='checkbox' ></input>
         </div>
+        {loading ? <Loading2/> : ''}
         <button type="submit" className={styles.submitButton} >
           Submit
         </button>
