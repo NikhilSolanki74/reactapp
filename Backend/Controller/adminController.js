@@ -121,7 +121,7 @@ const getRegisteredUser =async (req ,res) =>{
     const offset = data.offset || 0;
 
 
-  const userdata = await registermodel.find({status:'0'},'name email contact').limit(limit).skip(offset)
+  const userdata = await registermodel.find({status:'0'},'name email contact registeredOn').limit(limit).skip(offset)
   const count  = await registermodel.countDocuments({status:{$eq:'0'}})
   const pages = Math.ceil(count/limit)
   // console.log(count, 'hellll')
@@ -138,6 +138,46 @@ const getRegisteredUser =async (req ,res) =>{
   return  res.json({success:false, msg:"Error in Fetching Data"})
   }
 }
+
+
+const getRegisteredSeller =async (req ,res) =>{
+  try {
+
+    const data = req.body;
+    if(!data){
+    return res.json({success:false , msg:'User Not Verified'})
+    }
+  //  console.log(data);
+   const verify = await checkToken(data)
+  //  console.log(verify,'heheh')
+  if(!verify){
+    return res.json({success:false , msg:'User Not Verified'})
+  }
+
+    
+    const limit = data.limit || 13;
+    const offset = data.offset || 0;
+
+
+  const userdata = await registermodel.find({status:'2'},'name email contact registeredOn').limit(limit).skip(offset)
+  const count  = await registermodel.countDocuments({status:{$eq:'2'}})
+  const pages = Math.ceil(count/limit)
+  // console.log(count, 'hellll')
+   if(userdata){
+     return res.json({success:true , msg:"data fetched Successfully",userdata ,pages,count })
+
+   }else{
+    return res.json({success:false , msg:'Data Not Found !'})
+
+   }
+
+  } catch (error) {
+    console.log(error)
+  return  res.json({success:false, msg:"Error in Fetching Data"})
+  }
+}
+
+
 
 
 const getChart =async (req,res) => {
@@ -448,4 +488,4 @@ const dt =await useractivity.aggregate([
 }
 
 
-module.exports = {getAdminData,removeAccount,edituser,getRegisteredUser,getChart,getLine,getEngagmentTime,getLineBar}
+module.exports = {getAdminData,removeAccount,edituser,getRegisteredUser,getChart,getLine,getEngagmentTime,getLineBar,getRegisteredSeller}

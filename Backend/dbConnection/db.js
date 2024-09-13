@@ -8,7 +8,8 @@ const model = new mongoose.Schema({
   contact: { type: Number, required: true },
   token:{type:String ,default:'empty'},
   status:{type:String ,default:'0'},
-  country:{type:String , default:'India'}
+  country:{type:String , default:'India'},
+  registeredOn:{type:Date , default:Date.now()}
 });
 const registermodel = mongoose.model("registermodel", model);
 

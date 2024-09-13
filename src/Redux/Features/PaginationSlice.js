@@ -11,6 +11,7 @@ export const PaginationSlice = createSlice( {
     next:true,
     prev:false,
     count:0,
+    fr:true,
 }
   },
   reducers:{

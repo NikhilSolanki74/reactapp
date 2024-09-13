@@ -30,6 +30,7 @@ import MyOrders from "./Component/MyOrders";
 import { WebSocketProvider } from "./WebSocketProvider";
 import { useSelector } from "react-redux";
 import CustomerOrder from "./Component/SellerComponent/CustomerOrder";
+import SellerPanel from './Component/AdminComponent/SellerPanel'
 function App() {
   const {user} = useSelector((state)=> state.user) || {};
  const [dt , setdt] = useState('');
@@ -125,6 +126,15 @@ function App() {
             </ProtectedAdminRoute>
           }
         />
+        <Route
+          path="/sellerpanel"
+          element={
+            <ProtectedAdminRoute>
+              <SellerPanel />
+            </ProtectedAdminRoute>
+          }
+        /> 
+
 
         <Route
           path="/userpanel"

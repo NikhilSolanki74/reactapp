@@ -22,6 +22,7 @@ const AdminNavbar = () => {
           <ul className={styles.list}>
             <li className={styles.item1} style={{textDecoration:linedata.l1 ? 'underline' : 'none',textUnderlineOffset:'4px'}} onClick={()=>navigate('/adminhomepage')}>Home</li>
             <li className={styles.item2}  style={{textDecoration:linedata.l2 ? 'underline' : 'none',textUnderlineOffset:'4px'}} onClick={()=>navigate('/userpanel')} > User Panel</li>
+            <li className={styles.item2}  style={{textDecoration:linedata.l4 ? 'underline' : 'none',textUnderlineOffset:'4px'}} onClick={()=>navigate('/sellerpanel')}>Seller Panel</li>
             <li className={styles.item3}  style={{textDecoration:linedata.l3 ? 'underline' : 'none',textUnderlineOffset:'4px'}} onClick={()=>navigate('/analytics')}>Analytics</li>
           </ul>
         </div>
