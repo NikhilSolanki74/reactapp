@@ -80,8 +80,9 @@ const handleDate = (dateString) =>{
   const minutes = date.getMinutes().toString().padStart(2,'0'); 
   const ampm = hours >= 12 ? 'pm' : 'am';
   hours = hours % 12 || 12; 
+  const year = date.getFullYear();
 
-  return `${day} ${month}, ${hours}:${minutes} ${ampm}`;
+  return `${day} ${month} ${year}, ${hours}:${minutes} ${ampm}`;
 }
 
 

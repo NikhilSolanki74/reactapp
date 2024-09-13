@@ -104,7 +104,7 @@ if(dataUpdate){
 
 const getRegisteredUser =async (req ,res) =>{
   try {
-
+   
     const data = req.body;
     if(!data){
     return res.json({success:false , msg:'User Not Verified'})
